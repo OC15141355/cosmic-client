@@ -21,6 +21,7 @@
 #include "../../Data/EquipData.h"
 
 #include <iostream>
+#include <string>
 
 namespace ms
 {

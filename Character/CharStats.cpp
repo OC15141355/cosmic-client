@@ -18,6 +18,7 @@
 #include "CharStats.h"
 
 #include "StatCaps.h"
+#include <string>
 
 namespace ms
 {

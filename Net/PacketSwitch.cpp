@@ -32,6 +32,7 @@
 #include "Handlers/TestingHandlers.h"
 
 #include "../Configuration.h"
+#include <string>
 
 namespace ms
 {

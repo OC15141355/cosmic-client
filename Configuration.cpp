@@ -18,6 +18,7 @@
 #include "Configuration.h"
 
 #include <fstream>
+#include <string>
 
 namespace ms
 {

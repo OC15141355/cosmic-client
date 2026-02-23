@@ -29,6 +29,7 @@
 #include "../../Net/Packets/PlayerPackets.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

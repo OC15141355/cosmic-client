@@ -40,6 +40,7 @@
 #include "UITypes/UIWorldMap.h"
 
 #include "../Net/Packets/GameplayPackets.h"
+#include <string>
 
 namespace ms
 {

@@ -18,6 +18,7 @@
 #include "OtherChar.h"
 
 #include "../Constants.h"
+#include <string>
 
 namespace ms
 {

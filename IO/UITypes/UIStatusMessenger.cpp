@@ -18,6 +18,7 @@
 #include "UIStatusMessenger.h"
 
 #include "../Constants.h"
+#include <string>
 
 namespace ms
 {

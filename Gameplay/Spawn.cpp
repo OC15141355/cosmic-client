@@ -24,6 +24,7 @@
 #include "MapleMap/MesoDrop.h"
 
 #include "../Character/OtherChar.h"
+#include <string>
 
 namespace ms
 {

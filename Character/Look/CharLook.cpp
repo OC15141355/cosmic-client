@@ -18,6 +18,7 @@
 #include "CharLook.h"
 
 #include "../../Data/WeaponData.h"
+#include <string>
 
 namespace ms
 {

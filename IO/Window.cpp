@@ -29,6 +29,7 @@
 #include <Windows.h>
 #else
 #include "stb_image.h"
+#include <string>
 #endif
 
 namespace ms

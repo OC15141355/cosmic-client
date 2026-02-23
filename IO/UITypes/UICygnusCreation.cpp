@@ -33,6 +33,7 @@
 #include "../../Net/Packets/CharCreationPackets.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

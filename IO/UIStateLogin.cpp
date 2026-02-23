@@ -24,6 +24,7 @@
 #include "UITypes/UIRegion.h"
 
 #include "../Configuration.h"
+#include <string>
 
 namespace ms
 {

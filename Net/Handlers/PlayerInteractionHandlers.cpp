@@ -20,6 +20,7 @@
 #include "../../IO/UI.h"
 
 #include "../../IO/UITypes/UICharInfo.h"
+#include <string>
 
 namespace ms
 {

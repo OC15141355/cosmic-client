@@ -21,6 +21,7 @@
 
 #include <nlnx/nx.hpp>
 #include <nlnx/node.hpp>
+#include <string>
 
 namespace ms
 {
@@ -101,7 +102,7 @@ namespace ms
 				for (size_t i = 0; i < restnum.length(); i++)
 				{
 					char c = restnum[i];
-					Point<int16_t> yshift = {0, (i % 2) ? -2 : 2};
+					Point<int16_t> yshift = {static_cast<int16_t>(0), static_cast<int16_t>((i % 2) ? -2 : 2)};
 					charsets[type][true].draw(c, {position + yshift, interopc});
 
 					int16_t advance;

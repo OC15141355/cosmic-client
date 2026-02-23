@@ -16,6 +16,7 @@
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.		//
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <string>
 
 #include "Template/Singleton.h"
 #include "Template/TypeMap.h"
@@ -260,8 +261,8 @@ namespace ms
 		friend struct Setting;
 
 		const char* FILENAME = "Settings";
-		const char* TITLE = "MapleStory";
-		const char* VERSION = "212.1";
+		const char* TITLE = "Cosmic";
+		const char* VERSION = "83";
 		const char* JOINLINK = "https://www.nexon.com/account/en/create";
 		const char* WEBSITE = "http://maplestory.nexon.net/";
 		const char* FINDID = "https://www.nexon.com/account/en/login";
@@ -294,7 +295,7 @@ namespace ms
 	// IP Address which the client will connect to
 	struct ServerIP : public Configuration::StringEntry
 	{
-		ServerIP() : StringEntry("ServerIP", "127.0.0.1")
+		ServerIP() : StringEntry("ServerIP", "192.168.0.25")
 		{}
 	};
 

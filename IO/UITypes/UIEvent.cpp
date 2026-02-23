@@ -23,6 +23,7 @@
 #include "../Data/ItemData.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

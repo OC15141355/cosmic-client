@@ -21,6 +21,7 @@
 #include "Helpers/MovementParser.h"
 
 #include "../../Gameplay/Stage.h"
+#include <string>
 
 namespace ms
 {

@@ -24,6 +24,7 @@
 #include "../Util/Randomizer.h"
 
 #include <chrono>
+#include <string>
 
 namespace ms
 {

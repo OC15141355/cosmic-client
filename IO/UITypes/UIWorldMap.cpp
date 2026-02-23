@@ -25,6 +25,7 @@
 #include "../IO/Components/MapleButton.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

@@ -21,6 +21,7 @@
 
 #include <nlnx/node.hpp>
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

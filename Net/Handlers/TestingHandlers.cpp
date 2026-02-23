@@ -21,6 +21,7 @@
 #include "../../IO/UI.h"
 
 #include "../../IO/UITypes/UILoginNotice.h"
+#include <string>
 
 namespace ms
 {

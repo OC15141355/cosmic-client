@@ -21,6 +21,7 @@
 #include "../Audio/Audio.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

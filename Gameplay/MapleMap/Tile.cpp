@@ -18,6 +18,7 @@
 #include "Tile.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

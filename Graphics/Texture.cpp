@@ -18,6 +18,7 @@
 #include "Texture.h"
 
 #include "GraphicsGL.h"
+#include <string>
 
 namespace ms
 {

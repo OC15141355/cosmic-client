@@ -18,6 +18,7 @@
 #include "CharacterParser.h"
 
 #include "ItemParser.h"
+#include <string>
 
 namespace ms
 {

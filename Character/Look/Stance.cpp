@@ -18,6 +18,7 @@
 #include "Stance.h"
 
 #include <iostream>
+#include <string>
 
 namespace ms
 {

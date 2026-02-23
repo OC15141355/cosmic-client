@@ -22,6 +22,7 @@
 #include "../../Net/Packets/MessagingPackets.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

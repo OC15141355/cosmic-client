@@ -20,6 +20,7 @@
 #include "../IO/UI.h"
 #include "../IO/UITypes/UINpcTalk.h"
 #include "../IO/UITypes/UIShop.h"
+#include <string>
 
 namespace ms
 {

@@ -22,6 +22,7 @@
 #include <unordered_set>
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

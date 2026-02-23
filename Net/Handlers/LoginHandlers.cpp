@@ -30,6 +30,7 @@
 #include "../../IO/UITypes/UIRaceSelect.h"
 #include "../../IO/UITypes/UITermsOfService.h"
 #include "../../IO/UITypes/UIWorldSelect.h"
+#include <string>
 
 namespace ms
 {

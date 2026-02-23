@@ -32,6 +32,7 @@
 #include <cctype>
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

@@ -18,6 +18,7 @@
 #include "Session.h"
 
 #include "../Configuration.h"
+#include <string>
 
 namespace ms
 {

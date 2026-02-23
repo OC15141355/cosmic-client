@@ -32,6 +32,7 @@
 #include "UITypes/UIShop.h"
 #include "UITypes/UIStatusBar.h"
 #include "UITypes/UIWorldMap.h"
+#include <string>
 
 namespace ms
 {

@@ -18,6 +18,7 @@
 #include "MapInfo.h"
 
 #include "../Constants.h"
+#include <string>
 
 namespace ms
 {

@@ -20,6 +20,7 @@
 #include "../Data/SkillData.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

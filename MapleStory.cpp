@@ -28,6 +28,7 @@
 #include <iostream>
 
 #include "Timer.h"
+#include <string>
 
 namespace ms
 {

@@ -18,6 +18,7 @@
 #include "LoginParser.h"
 
 #include "../../Session.h"
+#include <string>
 
 namespace ms
 {

@@ -17,11 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifdef _WIN32
-#include <glew.h>
-#else
 #include <glad/glad.h>
-#endif
 
 #include <array>
 #include <algorithm>

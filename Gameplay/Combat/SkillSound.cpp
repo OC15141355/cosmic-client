@@ -18,6 +18,7 @@
 #include "SkillSound.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

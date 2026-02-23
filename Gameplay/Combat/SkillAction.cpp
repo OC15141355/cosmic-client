@@ -18,6 +18,7 @@
 #include "SkillAction.h"
 
 #include "../../Util/Misc.h"
+#include <string>
 
 namespace ms
 {

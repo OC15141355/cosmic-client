@@ -21,6 +21,7 @@
 #include "../Util/Misc.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

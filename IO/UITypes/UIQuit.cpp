@@ -28,6 +28,7 @@
 #include "../../Net/Session.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

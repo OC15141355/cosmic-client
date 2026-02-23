@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
-project(HeavenClient)
+project(cosmic-client)
 
 set(CMAKE_CXX_STANDARD 17)
+
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "Build for Apple Silicon")
+    add_compile_definitions(GL_SILENCE_DEPRECATION)
+endif()
+
+# --- Source files ---
 
 include_directories(.)
 include_directories(Audio)
@@ -24,7 +31,7 @@ include_directories(Net/Packets)
 include_directories(Template)
 include_directories(Util)
 
-add_executable(HeavenClient
+add_executable(cosmic-client
     Audio/Audio.cpp
     Audio/Audio.h
     Character/Inventory/Equip.cpp
@@ -444,53 +451,69 @@ add_executable(HeavenClient
     MapleStory.cpp
     MapleStory.h
     resource.h
-    Timer.h Audio/membuf.cpp Audio/membuf.h
+    Timer.h
+
+    # NoLifeNx sources (compiled directly)
+    includes/nlnx/audio.cpp
+    includes/nlnx/bitmap.cpp
+    includes/nlnx/file.cpp
+    includes/nlnx/node.cpp
+    includes/nlnx/nx.cpp
+
+    # GLAD OpenGL loader
+    thirdparty/glad/src/glad.c
 )
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/NoLifeNx)
-TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/NoLifeNx/nlnx/build/libNoLifeNx.a)
+# --- Include paths ---
 
-TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/lz4/lib/liblz4.a)
+# NoLifeNx headers (provides <nlnx/*.hpp>)
+target_include_directories(cosmic-client PUBLIC ${PROJECT_SOURCE_DIR}/includes)
 
-INCLUDE(FindFreetype)
-IF(NOT FREETYPE_FOUND)
-    FIND_LIBRARY(FREETYPE_LIBRARIES NAMES libfreetype freetype.dll PATHS "./libs/MacOS" "./libs/Windows" DOC "Freetype library")
-    FIND_PATH(FREETYPE_INCLUDE_DIRS ftbuild.h "./includes" DOC "Freetype includes")
-ENDIF(NOT FREETYPE_FOUND)
-INCLUDE_DIRECTORIES(${FREETYPE_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(HeavenClient ${FREETYPE_LIBRARIES})
+# GLAD headers (provides <glad/glad.h> and <KHR/khrplatform.h>)
+target_include_directories(cosmic-client PUBLIC ${PROJECT_SOURCE_DIR}/thirdparty/glad/include)
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/glad/build/include)
-TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/glad/build/libglad.a)
+# miniaudio header
+target_include_directories(cosmic-client PUBLIC ${PROJECT_SOURCE_DIR}/thirdparty)
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/stb)
+# stb headers (stb_image.h etc.)
+target_include_directories(cosmic-client PUBLIC ${PROJECT_SOURCE_DIR}/includes/stb)
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/asio/asio/include)
+# --- Find system packages ---
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/openal-soft/include)
-IF(APPLE)
-    TARGET_LINK_LIBRARIES(HeavenClient /usr/local/Cellar/openal-soft/1.20.1/lib/libopenal.dylib)
-ELSE()
-    TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/openal-soft/build/libopenal.so)
-ENDIF()
+# FreeType
+find_package(Freetype REQUIRED)
+target_include_directories(cosmic-client PUBLIC ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(cosmic-client ${FREETYPE_LIBRARIES})
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/glfw/include)
-IF(APPLE)
-    TARGET_LINK_LIBRARIES(HeavenClient /usr/local/Cellar/glfw/3.3.2/lib/libglfw.dylib)
-ELSE(APPLE)
-    TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/glfw/build/src/libglfw3.a)
-ENDIF()
+# lz4 (used by NoLifeNx for bitmap decompression)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LZ4 REQUIRED liblz4)
+target_include_directories(cosmic-client PUBLIC ${LZ4_INCLUDE_DIRS})
+target_link_libraries(cosmic-client ${LZ4_LINK_LIBRARIES})
 
-TARGET_INCLUDE_DIRECTORIES(HeavenClient PUBLIC ${PROJECT_SOURCE_DIR}/libs/alure/include)
-IF(APPLE)
-    TARGET_LINK_LIBRARIES(HeavenClient /usr/local/Cellar/alure/1.2_1/lib/libalure.dylib)
-ELSE()
-    TARGET_LINK_LIBRARIES(HeavenClient ${PROJECT_SOURCE_DIR}/libs/alure/build/libalure2.so)
-ENDIF()
+# GLFW
+find_package(glfw3 3.3 REQUIRED)
+target_link_libraries(cosmic-client glfw)
 
-TARGET_LINK_LIBRARIES(HeavenClient GL)
-TARGET_LINK_LIBRARIES(HeavenClient X11)
-IF(NOT APPLE)
-    TARGET_LINK_LIBRARIES(HeavenClient dl)
-    TARGET_LINK_LIBRARIES(HeavenClient pthread)
-ENDIF()
+# ASIO (header-only)
+find_path(ASIO_INCLUDE_DIR asio.hpp HINTS /opt/homebrew/include /usr/local/include)
+if(ASIO_INCLUDE_DIR)
+    target_include_directories(cosmic-client PUBLIC ${ASIO_INCLUDE_DIR})
+else()
+    message(FATAL_ERROR "ASIO not found. Install with: brew install asio")
+endif()
+
+# --- Platform-specific linking ---
+
+if(APPLE)
+    target_link_libraries(cosmic-client
+        "-framework OpenGL"
+        "-framework CoreAudio"
+        "-framework AudioToolbox"
+        "-framework CoreFoundation"
+        "-framework Cocoa"
+        "-framework IOKit"
+    )
+else()
+    target_link_libraries(cosmic-client GL X11 dl pthread)
+endif()

@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

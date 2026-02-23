@@ -20,6 +20,7 @@
 #include "../../Constants.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {

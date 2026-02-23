@@ -23,6 +23,7 @@
 
 #include "../../IO/UITypes/UIChatBar.h"
 #include "../../IO/UITypes/UIStatusMessenger.h"
+#include <string>
 
 namespace ms
 {

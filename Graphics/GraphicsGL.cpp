@@ -18,6 +18,8 @@
 #include "GraphicsGL.h"
 
 #include "../Configuration.h"
+#include <GLFW/glfw3.h>
+#include <string>
 
 namespace ms
 {
@@ -83,14 +85,9 @@ namespace ms
 
 		// Initialize and configure
 		// ------------------------
-		//gladLoadGL();
-		//if (GLenum error = glewInit())
-		//	return Error(Error::Code::GLEW, (const char*)glewGetErrorString(error));
-
-		if (!gladLoadGL())
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
-			printf("Something went wrong!\n");
-			exit(-1);
+			return Error::Code::GLEW;
 		}
 
 		std::cout << "Using OpenGL " << glGetString(GL_VERSION) << std::endl;

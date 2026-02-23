@@ -28,6 +28,7 @@
 #include "../Net/Packets/GameplayPackets.h"
 
 #include <nlnx/nx.hpp>
+#include <string>
 
 namespace ms
 {
