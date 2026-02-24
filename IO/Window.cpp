@@ -192,13 +192,12 @@ namespace ms
 
 		auto stbi = stbi_load(icon_path.c_str(), &images[0].width, &images[0].height, 0, 4);
 
-		if (stbi == NULL)
-			return Error(Error::Code::MISSING_ICON, stbi_failure_reason());
-
-		images[0].pixels = stbi;
-
-		glfwSetWindowIcon(glwnd, 1, images);
-		stbi_image_free(images[0].pixels);
+		if (stbi != NULL)
+		{
+			images[0].pixels = stbi;
+			glfwSetWindowIcon(glwnd, 1, images);
+			stbi_image_free(images[0].pixels);
+		}
 
 		GraphicsGL::get().reinit();
 
