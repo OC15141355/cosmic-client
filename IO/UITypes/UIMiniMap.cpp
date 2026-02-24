@@ -60,7 +60,7 @@ namespace ms
 
 		marker = Setting<MiniMapDefaultHelpers>::get().load()
 				 ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"]
-				 : nl::nx::mapLatest["MapHelper.img"]["minimap"];
+				 : nl::nx::map["MapHelper.img"]["minimap"];
 
 		player_marker = Animation(marker["user"]);
 		selected_marker = Animation(MiniMap["iconNpc"]);
@@ -561,7 +561,7 @@ namespace ms
 											  Point<int16_t>(c_stretch, 0)));
 		max_sprites.emplace_back(Max[DownLeft], Point<int16_t>(0, down_y_offset + MAX_ADJ));
 		max_sprites.emplace_back(Max[DownRight], Point<int16_t>(ur_x_offset, down_y_offset + MAX_ADJ));
-		max_sprites.emplace_back(nl::nx::mapLatest["MapHelper.img"]["mark"][Map["info"]["mapMark"]],
+		max_sprites.emplace_back(nl::nx::map["MapHelper.img"]["mark"][Map["info"]["mapMark"]],
 								 DrawArgument(Point<int16_t>(7, 17)));
 
 		max_dimensions = normal_dimensions + Point<int16_t>(0, MAX_ADJ);

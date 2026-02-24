@@ -107,7 +107,7 @@ namespace ms
 		world_sprites.emplace_back(selectedWorld["name"][world], worldpos - Point<int16_t>(8, 1));
 		world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
 
-		nl::node map = nl::nx::map001["Back"]["login.img"];
+		nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node ani = map["ani"];
 
 		sprites.emplace_back(map["back"]["13"], Point<int16_t>(392, 297));

@@ -58,7 +58,7 @@ namespace ms
 		channelid = Setting<DefaultChannel>::get().load();
 		uint8_t regionid = Setting<DefaultRegion>::get().load();
 
-		nl::node obj = nl::nx::mapLatest["Obj"]["login.img"];
+		nl::node obj = nl::nx::map["Obj"]["login.img"];
 		nl::node login = nl::nx::ui["Login.img"];
 		worldselect = login["WorldSelect"];
 		worldsrc = worldselect["BtWorld"]["release"];
