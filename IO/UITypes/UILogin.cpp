@@ -46,7 +46,8 @@ namespace ms
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
-		nl::node map = nl::nx::map001["Back"]["login.img"];
+		// v83: login background is in Map.nx, not Map001.nx/MapPretty.nx
+		nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node back = map["back"];
 		nl::node ani = map["ani"];
 
@@ -54,7 +55,7 @@ namespace ms
 		nl::node title = nl::nx::ui["Login.img"]["Title"];
 		nl::node common = nl::nx::ui["Login.img"]["Common"];
 
-		nl::node prettyLogo = nl::nx::mapPretty["Back"]["login.img"]["ani"]["16"];
+		nl::node prettyLogo = map["ani"]["16"];
 
 		sprites.emplace_back(back["11"], Point<int16_t>(400, 300));
 		sprites.emplace_back(ani["17"], Point<int16_t>(129, 283));

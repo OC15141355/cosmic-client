@@ -67,6 +67,15 @@ namespace ms
 	{
 		UIElement::update();
 
+		if (user_clicked)
+		{
+			Configuration::get().set_start_shown(true);
+
+			UI::get().remove(UIElement::Type::START);
+			UI::get().emplace<UILogin>();
+			return;
+		}
+
 		if (!nexon_ended)
 		{
 			nexon_ended = Nexon.update();
