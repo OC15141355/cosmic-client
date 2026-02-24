@@ -34,7 +34,7 @@ namespace ms
 {
 	UIStatsInfo::UIStatsInfo(const CharStats &st) : UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(st)
 	{
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"]; // v83: BtClose3 is empty, use BtClose2
 		nl::node Stat = nl::nx::ui["UIWindow.img"]["Stat"]; // v83: flat structure (no main/ or detail/)
 
 		sprites.emplace_back(Stat["backgrnd"]);

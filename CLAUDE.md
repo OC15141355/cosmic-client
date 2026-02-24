@@ -210,13 +210,13 @@ Key index reference (DIK → physical key):
 
 ### NX Dumper Tool
 ```bash
-/tmp/nxdump/build/nxdump <file.nx> <path> [depth]
-# Example: /tmp/nxdump/build/nxdump build/UI.nx Login.img/WorldSelect 2
+tools/nxdump/build/nxdump <file.nx> <path> [depth]
+# Example: tools/nxdump/build/nxdump build/UI.nx Login.img/WorldSelect 2
 ```
 
 ### WZ-to-NX Converter
 ```bash
-/tmp/wztonx-build/wztonx -c <file.wz>
+tools/wztonx/build/wztonx -c <file.wz>
 ```
 
 ### WorldSelect (Login.img/WorldSelect) — v83
@@ -542,8 +542,8 @@ When a UI screen crashes or renders wrong, the issue is almost always a v167+ NX
 1. **Identify the file**: crash backtrace → which UIType constructor/draw
 2. **Dump the v83 NX structure**:
    ```bash
-   /tmp/nxdump/build/nxdump build/UI.nx Login.img/CharSelect 3
-   /tmp/nxdump/build/nxdump build/Map.nx Obj/login.img/CharSelect 3
+   tools/nxdump/build/nxdump build/UI.nx Login.img/CharSelect 3
+   tools/nxdump/build/nxdump build/Map.nx Obj/login.img/CharSelect 3
    ```
 3. **Compare with code**: look for node paths in the .cpp that don't match the dump
 4. **Fix paths**: update to match v83 structure, add `// v83:` comment
@@ -556,8 +556,10 @@ When an NX node doesn't exist, `nl::node` returns a null/empty node. These are *
 - `Animation(node)` → empty animation
 - `Charset(node, ...)` → empty charset
 
+These are also **safe** (verified in `MapleButton.cpp`):
+- `MapleButton(node)` → null node produces empty textures (no-op draw, zero-size bounds)
+
 These are **NOT safe**:
-- `MapleButton(node)` → crashes if `normal/0` doesn't exist (accesses child nodes)
 - `NameTag(node)` → crashes on missing bitmap children
 - Indexing into null node children that are then dereferenced
 

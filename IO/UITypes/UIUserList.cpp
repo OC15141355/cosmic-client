@@ -27,7 +27,8 @@ namespace ms
 {
 	UIUserList::UIUserList(uint16_t t) : UIDragElement<PosUSERLIST>(Point<int16_t>(260, 20)), tab(t)
 	{
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		// v83: BtClose3 is empty in v83 — use BtClose2 instead
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"];
 		UserList = nl::nx::ui["UIWindow.img"]["UserList"]; // v83: flat (no Main/ intermediate)
 
 		sprites.emplace_back(UserList["backgrnd"]);

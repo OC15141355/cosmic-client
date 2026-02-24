@@ -25,6 +25,8 @@
 #include "../../Character/CharStats.h"
 #include "../../Graphics/SpecialText.h"
 
+#include <array>
+
 namespace ms
 {
 	class UIStatusBar : public UIElement
@@ -87,6 +89,11 @@ namespace ms
 		void remove_active_menu(MenuType type);
 
 		Point<int16_t> get_quickslot_pos() const;
+
+	public:
+		// v83: Store quickslot key indices from server (8 DIK scan codes)
+		void set_quickslot_keys(const std::array<int32_t, 8>& keys);
+	private:
 
 		enum Buttons : uint16_t
 		{
@@ -161,6 +168,7 @@ namespace ms
 		int16_t position_y;
 
 		bool quickslot_active;
+		std::array<int32_t, 8> quickslot_keys{}; // v83: DIK scan code indices from server
 		int16_t VWIDTH;
 		int16_t VHEIGHT;
 

@@ -15,7 +15,7 @@ Custom MapleStory v83 private server + native client mono-repo.
 - CRITICAL: v83 NX paths differ from v167+. Always verify with nxdump before coding.
 - Comment v83 deviations with `// v83:` prefix.
 - Use `nl::nx::map` for map data (NOT map001/mapLatest/mapPretty).
-- MapleButton(null_node) CRASHES. Sprite/Texture(null_node) = safe empty.
+- MapleButton(null_node) is safe (empty textures, no-op draw). Sprite/Texture(null_node) also safe.
 - Packet encryption: AES-OFB, pre-v118 key, MAPLEVERSION=83.
 - NX files required: see Util/NxFiles.h (15 v83 files, single Map.nx).
 

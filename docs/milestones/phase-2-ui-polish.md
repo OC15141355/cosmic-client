@@ -63,4 +63,4 @@ Test each keybinding opens a working UI with no crashes:
 | Key config | `IO/UITypes/UIKeyConfig.cpp` |
 | Quit menu | `IO/UITypes/UIQuit.cpp` |
 | Chat bar | `IO/UITypes/UIChatBar.cpp` |
-| NX dumper | `/tmp/nxdump/build/nxdump` |
+| NX dumper | `tools/nxdump/build/nxdump` |

@@ -72,18 +72,18 @@ namespace ms
 		sprites.emplace_back(base["backgrnd"]);
 		sprites.emplace_back(base["backgrnd2"]);
 
-		// v83: EXP bar uses the gauge bar texture (thin bar at bottom)
-		exp_pos = Point<int16_t>(0, 87);
+		// v83: EXP bar — gauge/bar is 340x31, drawn at top of bar area
+		exp_pos = Point<int16_t>(0, 0);
 		int16_t exp_max = VWIDTH - 16;
 		expbar = Gauge(Gauge::Type::GAME, gauge["bar"], exp_max, 0.0f);
 
 		quickslot_min = 0;
 
-		// v83: Fixed positions for 800x600 layout
+		// v83: Fixed positions for 800x600 bottom bar layout (800x71 background)
 		hpmp_pos = Point<int16_t>(174, 24);
 		hpset_pos = Point<int16_t>(260, 30);
 		mpset_pos = Point<int16_t>(260, 48);
-		statset_pos = Point<int16_t>(427, 111);
+		statset_pos = Point<int16_t>(450, 60);
 		levelset_pos = Point<int16_t>(32, 30);
 		namelabel_pos = Point<int16_t>(32, 48);
 		quickslot_pos = Point<int16_t>(579, 0);
@@ -96,7 +96,7 @@ namespace ms
 		character_pos = menu_pos + Point<int16_t>(-61, 168);
 		event_pos = menu_pos + Point<int16_t>(-94, 252);
 
-		// v83: HP/MP gauge area — use gauge textures
+		// v83: HP/MP gauge area — gauge/bar is 340x31, used for both HP and MP
 		int16_t hpmp_max = 139;
 		hpbar = Gauge(Gauge::Type::GAME, gauge["bar"], hpmp_max, 0.0f);
 		mpbar = Gauge(Gauge::Type::GAME, gauge["bar"], hpmp_max, 0.0f);
@@ -111,18 +111,20 @@ namespace ms
 		// v83: QuickSlot background from base
 		quickslot[0] = base["quickSlot"];
 
-		// v83: Main bar buttons — use v83 MapleButton assets
-		// These replace the v167+ menu["button:X"] buttons
-		buttons[Buttons::BT_CASHSHOP] = std::make_unique<MapleButton>(StatusBar["BtShop"]);
-		buttons[Buttons::BT_MENU] = std::make_unique<MapleButton>(StatusBar["BtMenu"]);
-		buttons[Buttons::BT_OPTIONS] = std::make_unique<MapleButton>(StatusBar["KeySet"]);
-		buttons[Buttons::BT_CHARACTER] = std::make_unique<MapleButton>(StatusBar["StatKey"]);
-		buttons[Buttons::BT_COMMUNITY] = std::make_unique<MapleButton>(StatusBar["BtWhisper"]);
-		buttons[Buttons::BT_EVENT] = std::make_unique<MapleButton>(StatusBar["BtClaim"]);
+		// v83: Main bar buttons — positioned along the right side of the 800x71 bar
+		// Small buttons (28x20): StatKey, EquipKey, InvenKey, SkillKey, KeySet, QuickSlot
+		// Large buttons (54x34): BtMenu, BtShop
+		// Origin for all is (0,0) — need explicit positioning
+		buttons[Buttons::BT_CASHSHOP] = std::make_unique<MapleButton>(StatusBar["BtShop"], Point<int16_t>(740, 5));
+		buttons[Buttons::BT_MENU] = std::make_unique<MapleButton>(StatusBar["BtMenu"], Point<int16_t>(740, 37));
+		buttons[Buttons::BT_OPTIONS] = std::make_unique<MapleButton>(StatusBar["KeySet"], Point<int16_t>(690, 45));
+		buttons[Buttons::BT_CHARACTER] = std::make_unique<MapleButton>(StatusBar["StatKey"], Point<int16_t>(600, 45));
+		buttons[Buttons::BT_COMMUNITY] = std::make_unique<MapleButton>(StatusBar["BtWhisper"], Point<int16_t>(660, 51));
+		buttons[Buttons::BT_EVENT] = std::make_unique<MapleButton>(StatusBar["BtClaim"], Point<int16_t>(630, 45));
 
 		// v83: QuickSlot fold/extend buttons
-		buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(StatusBar["QuickSlot"]);
-		buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(StatusBar["QuickSlotD"]);
+		buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(StatusBar["QuickSlot"], Point<int16_t>(570, 45));
+		buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(StatusBar["QuickSlotD"], Point<int16_t>(570 + quickslot_qs_adj.x(), 45));
 
 		if (quickslot_active)
 			buttons[Buttons::BT_EXTEND_QS]->set_active(false);
@@ -214,10 +216,11 @@ namespace ms
 		for (size_t i = 0; i <= Buttons::BT_EVENT; i++)
 			buttons.at(i)->draw(position);
 
-		// v83: hpmp_sprites not used — gauge area is part of base/backgrnd
+		// v83: gauge area is part of base/backgrnd
 		expbar.draw(position + exp_pos);
 		hpbar.draw(position + hpmp_pos);
-		mpbar.draw(position + hpmp_pos);
+		// v83: MP gauge drawn 16px below HP (same gauge/bar texture)
+		mpbar.draw(position + hpmp_pos + Point<int16_t>(0, 16));
 
 		int16_t level = stats.get_stat(MapleStat::Id::LEVEL);
 		int16_t hp = stats.get_stat(MapleStat::Id::HP);
@@ -841,6 +844,12 @@ namespace ms
 			toggle_character();
 		else if (event_active && type != MenuType::EVENT)
 			toggle_event();
+	}
+
+	void UIStatusBar::set_quickslot_keys(const std::array<int32_t, 8>& keys)
+	{
+		quickslot_keys = keys;
+		// TODO: Render key icons in quickslot slots using keymap lookups
 	}
 
 	Point<int16_t> UIStatusBar::get_quickslot_pos() const

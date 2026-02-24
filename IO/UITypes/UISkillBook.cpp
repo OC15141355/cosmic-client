@@ -166,7 +166,8 @@ namespace ms
 
 		buttons[Buttons::BT_MACRO_OK]->set_state(Button::State::DISABLED);
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		// v83: BtClose3 is empty in v83 — use BtClose2 instead
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"];
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(bg_dimensions.x() - 23, 6));
 

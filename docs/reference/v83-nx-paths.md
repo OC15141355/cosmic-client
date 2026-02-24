@@ -4,13 +4,13 @@
 
 ## NX Dumper Tool
 ```bash
-/tmp/nxdump/build/nxdump <file.nx> <path> [depth]
-# Example: /tmp/nxdump/build/nxdump build/UI.nx Login.img/WorldSelect 2
+tools/nxdump/build/nxdump <file.nx> <path> [depth]
+# Example: tools/nxdump/build/nxdump build/UI.nx Login.img/WorldSelect 2
 ```
 
 ## WZ-to-NX Converter
 ```bash
-/tmp/wztonx-build/wztonx -c <file.wz>
+tools/wztonx/build/wztonx -c <file.wz>
 ```
 
 ## WorldSelect (Login.img/WorldSelect) — v83

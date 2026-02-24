@@ -26,6 +26,9 @@
 #include "../../IO/UITypes/UICashShop.h"
 #include "../../IO/UITypes/UISkillBook.h"
 #include "../../IO/UITypes/UIStatsInfo.h"
+#include "../../IO/UITypes/UIStatusBar.h"
+
+#include <array>
 
 namespace ms
 {
@@ -247,11 +250,13 @@ namespace ms
 
 			if (flag != 0 && recv.available())
 			{
-				// Read the 8 quickslot key indices (DIK scan codes)
-				for (int i = 0; i < 8; i++)
-					recv.read_int(); // quickslot key index
+				std::array<int32_t, 8> keys{};
 
-				// TODO: Store these and wire to UIStatusBar quickslot display
+				for (int i = 0; i < 8; i++)
+					keys[i] = recv.read_int();
+
+				if (auto statusbar = UI::get().get_element<UIStatusBar>())
+					statusbar->set_quickslot_keys(keys);
 			}
 		}
 	}

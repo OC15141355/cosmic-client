@@ -85,49 +85,43 @@ namespace ms
 		tab_source[Buttons::BT_TAB2] = "Pet";
 		tab_source[Buttons::BT_TAB3] = "Android";
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"]; // v83: BtClose3 is empty, use BtClose2
 		nl::node Equip = nl::nx::ui["UIWindow.img"]["Equip"]; // v83: was UIWindow4.img
 
-		background[Buttons::BT_TAB0] = Equip[tab_source[Buttons::BT_TAB0]]["backgrnd"];
-		background[Buttons::BT_TAB1] = Equip[tab_source[Buttons::BT_TAB1]]["backgrnd"];
-		background[Buttons::BT_TAB2] = Equip[tab_source[Buttons::BT_TAB2]]["backgrnd"];
-		background[Buttons::BT_TAB3] = Equip[tab_source[Buttons::BT_TAB3]]["backgrnd"];
+		// v83: flat structure — no Equip/Cash/Pet/Android sub-nodes
+		// Use top-level backgrnd for the equip tab; others stay empty (null texture, no-op draw)
+		background[Buttons::BT_TAB0] = Equip["backgrnd"];
 
-		for (uint16_t i = Buttons::BT_TAB0; i < Buttons::BT_TABE; i++)
-			for (auto slot : Equip[tab_source[i]]["Slots"])
-				if (slot.name().find("_") == std::string::npos)
-					Slots[i].emplace_back(slot);
+		// v83: no Slots node — slot overlays not available
 
-		nl::node EquipGL = nl::nx::ui["UIWindowGL.img"]["Equip"];
+		// v83: UIWindowGL.img is empty — no totem section
 		nl::node backgrnd = Equip["backgrnd"];
-		nl::node totem_backgrnd = EquipGL["Totem"]["backgrnd"];
 
 		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();
-		totem_dimensions = Texture(totem_backgrnd).get_dimensions();
-		totem_adj = Point<int16_t>(-totem_dimensions.x() + 4, 0);
+		totem_dimensions = Point<int16_t>(0, 0);
+		totem_adj = Point<int16_t>(0, 0);
 
-		sprites.emplace_back(totem_backgrnd, totem_adj);
 		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(Equip["backgrnd2"]);
 
+		// v83: no tabbar, disabled overlays — these resolve to empty sprites (safe)
 		tabbar = Equip["tabbar"];
-		disabled = Equip[tab_source[Buttons::BT_TAB0]]["disabled"];
-		disabled2 = Equip[tab_source[Buttons::BT_TAB0]]["disabled2"];
+		disabled = Equip["disabled"];
+		disabled2 = Equip["disabled2"];
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(bg_dimensions.x() - 19, 5));
-		buttons[Buttons::BT_SLOT] = std::make_unique<MapleButton>(Equip[tab_source[Buttons::BT_TAB0]]["BtSlot"]);
-		buttons[Buttons::BT_EFFECT] = std::make_unique<MapleButton>(EquipGL["Equip"]["btEffect"]);
-		buttons[Buttons::BT_SALON] = std::make_unique<MapleButton>(EquipGL["Equip"]["btSalon"]);
-		buttons[Buttons::BT_CONSUMESETTING] = std::make_unique<MapleButton>(
-				Equip[tab_source[Buttons::BT_TAB2]]["BtConsumeSetting"]);
-		buttons[Buttons::BT_EXCEPTION] = std::make_unique<MapleButton>(
-				Equip[tab_source[Buttons::BT_TAB2]]["BtException"]);
-		buttons[Buttons::BT_SHOP] = std::make_unique<MapleButton>(Equip[tab_source[Buttons::BT_TAB3]]["BtShop"]);
+		// v83: BtDetail exists at top level; BtSlot, btEffect, btSalon don't exist (null = invisible, safe)
+		buttons[Buttons::BT_SLOT] = std::make_unique<MapleButton>(Equip["BtSlot"]);
+		buttons[Buttons::BT_EFFECT] = std::make_unique<MapleButton>(Equip["btEffect"]);
+		buttons[Buttons::BT_SALON] = std::make_unique<MapleButton>(Equip["btSalon"]);
+		buttons[Buttons::BT_CONSUMESETTING] = std::make_unique<MapleButton>(Equip["BtConsumeSetting"]);
+		buttons[Buttons::BT_EXCEPTION] = std::make_unique<MapleButton>(Equip["BtException"]);
+		buttons[Buttons::BT_SHOP] = std::make_unique<MapleButton>(Equip["BtShop"]);
 
 		buttons[Buttons::BT_CONSUMESETTING]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_EXCEPTION]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_SHOP]->set_state(Button::State::DISABLED);
 
+		// v83: no Tab node — tab buttons invisible (TwoSpriteButton with null = safe)
 		nl::node Tab = Equip["Tab"];
 
 		for (uint16_t i = Buttons::BT_TAB0; i < Buttons::BT_TABE; i++)

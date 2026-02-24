@@ -5,20 +5,39 @@
 #include <nlnx/nx.hpp>
 #include <nlnx/node.hpp>
 #include <nlnx/file.hpp>
+#include <nlnx/bitmap.hpp>
 
 void dump_node(nl::node n, const std::string& prefix, int depth, int max_depth) {
     if (depth > max_depth) return;
     for (auto child : n) {
         std::string indent(depth * 2, ' ');
         std::cout << indent << child.name();
-        if (child.data_type() == nl::node::type::string)
-            std::cout << " = \"" << child.get_string() << "\"";
-        else if (child.data_type() == nl::node::type::integer)
-            std::cout << " = " << child.get_integer();
-        else if (child.data_type() == nl::node::type::bitmap)
-            std::cout << " [bitmap]";
-        else if (child.data_type() == nl::node::type::audio)
-            std::cout << " [audio]";
+        switch (child.data_type()) {
+            case nl::node::type::string:
+                std::cout << " = \"" << child.get_string() << "\"";
+                break;
+            case nl::node::type::integer:
+                std::cout << " = " << child.get_integer();
+                break;
+            case nl::node::type::real:
+                std::cout << " = " << child.get_real();
+                break;
+            case nl::node::type::vector: {
+                auto v = child.get_vector();
+                std::cout << " [vector] = (" << v.first << ", " << v.second << ")";
+                break;
+            }
+            case nl::node::type::bitmap: {
+                nl::bitmap bmp = child.get_bitmap();
+                std::cout << " [bitmap " << bmp.width() << "x" << bmp.height() << "]";
+                break;
+            }
+            case nl::node::type::audio:
+                std::cout << " [audio]";
+                break;
+            default:
+                break;
+        }
         std::cout << std::endl;
         dump_node(child, prefix + "/" + std::string(child.name()), depth + 1, max_depth);
     }

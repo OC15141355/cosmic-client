@@ -34,7 +34,8 @@ namespace ms
 
 		// v83: EventList doesn't exist, use MapleEvent instead (simple: BtClose, Loading, backgrnd)
 		nl::node MapleEvent = nl::nx::ui["UIWindow.img"]["MapleEvent"];
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		// v83: BtClose3 is empty in v83 — use BtClose2 instead
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"];
 
 		nl::node backgrnd = MapleEvent["backgrnd"];
 		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();

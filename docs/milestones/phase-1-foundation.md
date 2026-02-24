@@ -20,9 +20,9 @@ Get the HeavenClient `linux` branch compiling on ARM64 macOS, establish the asse
 
 ### 1.2 Asset Pipeline
 
-- [x] WZ-to-NX converter built for macOS (`/tmp/wztonx-build/wztonx`)
+- [x] WZ-to-NX converter built for macOS (`tools/wztonx/build/wztonx`)
 - [x] All 17 v83 WZ files converted to NX format
-- [x] NX dumper diagnostic tool (`/tmp/nxdump/build/nxdump`)
+- [x] NX dumper diagnostic tool (`tools/nxdump/build/nxdump`)
 - [ ] Convert community repack WZ/IMG files to NX
 - [ ] Automate NX conversion in build pipeline
 
@@ -65,4 +65,4 @@ None. This is the foundation phase.
 | Crash handler | `MapleStory.cpp` |
 | Hair layers | `Character/Hair.cpp` |
 | Opcode stubs | `Net/PacketSwitch.cpp`, `Net/Handlers/LoginHandlers.cpp`, `Net/Handlers/PlayerHandlers.cpp` |
-| Asset tools | `/tmp/wztonx-build/wztonx`, `/tmp/nxdump/build/nxdump` |
+| Asset tools | `tools/wztonx/build/wztonx`, `tools/nxdump/build/nxdump` |

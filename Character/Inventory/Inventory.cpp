@@ -215,6 +215,8 @@ namespace ms
 					case Movement::MOVE_EQUIP:
 						swap(InventoryType::Id::EQUIP, slot, InventoryType::Id::EQUIPPED, arg);
 						break;
+					case Movement::MOVE_NONE:
+						break;
 				}
 
 				break;

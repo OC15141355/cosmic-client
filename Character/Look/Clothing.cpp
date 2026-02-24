@@ -168,6 +168,8 @@ namespace ms
 						case EquipSlot::Id::EYEACC:
 							shift = drawinfo.getfacepos(stance, frame) - parentpos;
 							break;
+						default:
+							break;
 						case EquipSlot::Id::SHIELD:
 						case EquipSlot::Id::WEAPON:
 							if (parent == "handMove")

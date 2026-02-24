@@ -64,7 +64,7 @@ namespace ms
 		nl::node taben = Tab["enabled"];
 		nl::node tabdis = Tab["disabled"];
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"]; // v83: BtClose3 is empty, use BtClose2
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close);
 
 		buttons[Buttons::BT_TAB_EQUIP] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);

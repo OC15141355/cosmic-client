@@ -27,7 +27,8 @@ namespace ms
 	{
 		tab = Buttons::TAB0;
 
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		// v83: BtClose3 is empty in v83 — use BtClose2 instead
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"];
 		nl::node quest = nl::nx::ui["UIWindow.img"]["Quest"]; // v83: was UIWindow2.img, flat (no list/ intermediate)
 
 		nl::node backgrnd = quest["backgrnd"];
@@ -51,19 +52,22 @@ namespace ms
 		buttons[Buttons::ALL_LEVEL] = std::make_unique<MapleButton>(quest["BtAllLevel"]);
 		buttons[Buttons::MY_LOCATION] = std::make_unique<MapleButton>(quest["BtMyLocation"]);
 
+		// v83: searchArea doesn't exist — skip textfield to avoid degenerate (0x0) bounds
 		search_area = quest["searchArea"];
 		auto search_area_dim = search_area.get_dimensions();
-		auto search_area_origin = search_area.get_origin().abs();
 
-		auto search_pos_adj = Point<int16_t>(29, 0);
-		auto search_dim_adj = Point<int16_t>(-80, 0);
+		if (search_area_dim.x() > 0 && search_area_dim.y() > 0)
+		{
+			auto search_area_origin = search_area.get_origin().abs();
+			auto search_pos_adj = Point<int16_t>(29, 0);
+			auto search_dim_adj = Point<int16_t>(-80, 0);
+			auto search_pos = position + search_area_origin + search_pos_adj;
+			auto search_dim = search_pos + search_area_dim + search_dim_adj;
 
-		auto search_pos = position + search_area_origin + search_pos_adj;
-		auto search_dim = search_pos + search_area_dim + search_dim_adj;
-
-		search = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER,
-						   Rectangle<int16_t>(search_pos, search_dim), 19);
-		placeholder = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, "Enter the quest name.");
+			search = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER,
+							   Rectangle<int16_t>(search_pos, search_dim), 19);
+			placeholder = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BOULDER, "Enter the quest name.");
+		}
 
 		slider = Slider(Slider::Type::DEFAULT_SILVER, Range<int16_t>(0, 279), 150, 20, 5, [](bool)
 		{});
@@ -87,7 +91,8 @@ namespace ms
 		else
 			notice_sprites[tab].draw(position + notice_position + Point<int16_t>(-10, 0), alpha);
 
-		if (tab != Buttons::TAB2)
+		// v83: searchArea doesn't exist — only draw search if textfield was initialized
+		if (tab != Buttons::TAB2 && search_area.get_dimensions().x() > 0)
 		{
 			search_area.draw(position);
 			search.draw(Point<int16_t>(0, 0));
@@ -124,8 +129,10 @@ namespace ms
 
 	Cursor::State UIQuestLog::send_cursor(bool clicking, Point<int16_t> cursorpos)
 	{
-		if (Cursor::State new_state = search.send_cursor(cursorpos, clicking))
-			return new_state;
+		// v83: only process search cursor if textfield was initialized
+		if (search_area.get_dimensions().x() > 0)
+			if (Cursor::State new_state = search.send_cursor(cursorpos, clicking))
+				return new_state;
 
 		return UIDragElement::send_cursor(clicking, cursorpos);
 	}
@@ -167,10 +174,14 @@ namespace ms
 			buttons[Buttons::ALL_LEVEL]->set_active(tab == Buttons::TAB0);
 			buttons[Buttons::SEARCH]->set_active(tab != Buttons::TAB2);
 
-			if (tab == Buttons::TAB2)
-				search.set_state(Textfield::State::DISABLED);
-			else
-				search.set_state(Textfield::State::NORMAL);
+			// v83: only change search state if textfield was initialized
+			if (search_area.get_dimensions().x() > 0)
+			{
+				if (tab == Buttons::TAB2)
+					search.set_state(Textfield::State::DISABLED);
+				else
+					search.set_state(Textfield::State::NORMAL);
+			}
 		}
 
 		buttons[Buttons::TAB0 + tab]->set_state(Button::State::PRESSED);

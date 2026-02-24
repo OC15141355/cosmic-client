@@ -44,7 +44,7 @@ Server Binary (Java, on 192.168.0.25)
 | NX files | ~/Projects/cosmic-client/build/*.nx |
 | WZ source | ~/Games/MapleStoryCX/drive_c/MapleStory/*.wz |
 | Community repack | ~/Downloads/Community Repack  .IMG/Data/ |
-| WZ-to-NX converter | /tmp/wztonx-build/wztonx |
-| NX dumper | /tmp/nxdump/build/nxdump |
+| WZ-to-NX converter | tools/wztonx/build/wztonx |
+| NX dumper | tools/nxdump/build/nxdump |
 | Cosmic server | 192.168.0.25:8484 |
 | Server VM | homelab@192.168.0.25 (via ProxyJump core-01) |

@@ -31,7 +31,8 @@ namespace ms
 {
 	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>()
 	{
-		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
+		// v83: BtClose3 is empty in v83 — use BtClose2 instead
+		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"];
 		nl::node WorldMap = nl::nx::ui["UIWindow.img"]["WorldMap"]; // v83: only has Border/0-7 and title
 		nl::node Border = WorldMap["Border"]["0"];
 		nl::node MapHelper = nl::nx::map["MapHelper.img"]["worldMap"];

@@ -45,6 +45,16 @@ namespace ms
 			npctalk->change_text(npcid, msgtype, style, speaker, text);
 	}
 
+	void ConfirmShopTransactionHandler::handle(InPacket& recv) const
+	{
+		// v83: CONFIRM_SHOP_TRANSACTION (opcode 306)
+		// Server sends 1 byte: result code
+		// 0x00 = buy success, 0x08 = sell success, others = error
+		// Inventory changes come via separate MODIFY_INVENTORY packet
+		if (recv.available())
+			recv.read_byte();
+	}
+
 	void OpenNpcShopHandler::handle(InPacket& recv) const
 	{
 		int32_t npcid = recv.read_int();
