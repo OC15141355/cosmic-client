@@ -1,0 +1,44 @@
+# TwinleafStory - Cursor Rules
+
+## Project
+Custom MapleStory v83 private server + native client mono-repo.
+- Client source at repo root (C++17, CMake/Ninja, macOS ARM64)
+- server/ = Java server emulator (Cosmic fork, Maven)
+- tools/ = WZ-to-NX converter (wztonx), NX structure inspector (nxdump)
+- docs/ = Architecture, milestones, protocol reference, setup guides
+
+## Client Conventions (C++)
+- C++17, CMake, Ninja. Build: `cd build && cmake -G Ninja .. && ninja`
+- OpenGL 2.1 via GLAD (NOT GLEW). GLFW3 for windowing.
+- Audio: miniaudio (NOT OpenAL/Alure). ma_decoder_init_memory pipeline.
+- NX files: memory-mapped via NoLifeNx (includes/nlnx/). Paths are v83-specific.
+- CRITICAL: v83 NX paths differ from v167+. Always verify with nxdump before coding.
+- Comment v83 deviations with `// v83:` prefix.
+- Use `nl::nx::map` for map data (NOT map001/mapLatest/mapPretty).
+- MapleButton(null_node) CRASHES. Sprite/Texture(null_node) = safe empty.
+- Packet encryption: AES-OFB, pre-v118 key, MAPLEVERSION=83.
+- NX files required: see Util/NxFiles.h (15 v83 files, single Map.nx).
+
+## Server Conventions (Java)
+- Java 17, Maven. Build: `cd server && ./mvnw clean package`
+- Cosmic fork (P0nk/Cosmic). AGPL-3.0 license.
+- Key files: SendOpcode.java, RecvOpcode.java, PacketCreator.java, Hwid.java
+- NPC scripts: JavaScript in server/scripts/
+
+## Assets
+- NX files (~6.9GB) NOT in git. Symlinked into build/ from external directory.
+- WZ source (~6.7GB) NOT in git. Community repack .IMG format.
+- Convert: tools/wztonx/build/wztonx -c <file.wz>
+- Inspect: tools/nxdump/build/nxdump <file.nx> <path> [depth]
+
+## Git
+- Branch: feature/client-*, feature/server-*, fix/*, docs/*
+- Commits: imperative mood, prefix with [client], [server], [tools], or [docs]
+- Never commit: *.nx, *.wz, build/, Settings, .DS_Store
+
+## AI Context
+- Detailed context in CLAUDE.md files at root and each subdirectory.
+- Root CLAUDE.md has full opcode tables, v83 NX path reference, architecture.
+- server/CLAUDE.md has Cosmic architecture, protocol notes.
+- tools/CLAUDE.md has tool usage and asset pipeline.
+- docs/ has milestones, reference material, setup guides.

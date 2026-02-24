@@ -1,0 +1,12 @@
+*.nx
+*.wz
+*.img
+build/
+server/target/
+tools/wztonx/wztonx
+tools/wztonx/build/
+tools/nxdump/build/
+.idea/
+.vs/
+.vscode/
+.vagrant/

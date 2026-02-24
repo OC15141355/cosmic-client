@@ -1,160 +1,115 @@
-# HeavenClient
+# TwinleafStory
 
-HeavenClient is a custom, made-from-scratch game client for Maplestory v83.
+A custom MapleStory v83 experience — native client + custom server mono-repo.
 
-## Supported versions
+## Overview
 
-- The client is currently compatible with version 83 servers.
-- The client has only been tested with [HeavenMS](https://github.com/ronancpl/HeavenMS).
-- There is also a Switch version available here: [HeavenClientNX](https://github.com/lain3d/HeavenClientNX).
+TwinleafStory is a from-scratch MapleStory v83 private server project combining:
 
-## Configuration
+- **Native client** — C++17, OpenGL 2.1, macOS ARM64 (Windows planned). Fork of HeavenClient's cross-platform `linux` branch, fully ported to v83 NX data.
+- **Custom server** — Java 17, Maven. Fork of [Cosmic](https://github.com/P0nk/Cosmic) (v83 GMS emulator).
+- **Development tools** — WZ-to-NX converter, NX structure inspector, setup scripts.
 
-The build can be configured by editing the **MapleStory.h** file. The following options are available:
+## Repo Structure
 
-- **USE_ASIO**: Use Asio for networking (additional dependency)
-- **USE_CRYPTO**: Use cryptography when communicating for the server
-
-The default settings can be configured by editing the **Configuration.h** file. These are also generated after a game session in a file called **Settings**. These can be altered in the same way as **Configuration.h**, although, these do not persist if you delete the file, unlike **Configuration.h**.
-
-## Building
-
-*After cloning you need to check out the linux branch! To do so run ```git checkout linux``` in your HeavenClient directory.*
-
-1. Run ```./build-deps.sh```. We try to build each dependency from source -- if any dependencies fail to build, you could try and find the corresponding package for your linux distro if it exists.
-2. ```mkdir build```
-3. ```cd build```
-4. ```cmake ..```
-5. ```make -j$CORES``` where $CORES is your number of CPU cores
-
-This will always be the option with the most performance, but if you are using Mac / are having issues, try out the [Vagrant](#vagrant-setup) or [Docker](#docker-setup---web-vnc) setups.
-
-## Required Files
-
-*Always check **NxFiles.h** for an updated list of required nx files*
-
-- [MapPretty.nx](https://drive.google.com/file/d/1d8HJkWY6ght5OAoJGtsAjNiG2BL1wcle/view?usp=sharing) (v167 GMS Map.wz)
-- MapLatest.nx (Lastest GMS Map.wz)
-- Map001.nx (Latest GMS Map001.wz)
-- UI.nx (Latest GMS UI.wz)
-- Everything else is from v83 GMS wz files
-
-## Dependencies
-
-- Nx library:
-[NoLifeNX](https://github.com/ryantpayton/NoLifeNx)
-
-- Graphics:
-[GLFW3](http://www.glfw.org/download.html), [GLAD](https://github.com/Dav1dde/glad), [FreeType](http://www.freetype.org/)
-
-- Audio:
-[OpenAL-soft](https://github.com/kcat/openal-soft), [Alure](https://github.com/kcat/alure)
-
-- Networking:
-[Asio](http://think-async.com/)
-
----
-
-## In-Game Issues
-
-If you experience any kind of in-game glitches, UI rendering issues, or anything else that seems out of the ordinary that other developers are not experiences; Follow these steps in order to hopefully resolve aforementioned issues.
-
-1. Clean Solution
-2. Close Visual Studio
-3. Delete the following files/folders: **.vs**, **x64**, **debug.log**, **MapleStory.aps**, **Settings**
-4. Open Solution
-5. Rebuild Solution
-
-Note: These steps are not applicable to linux
-
----
-
-## Vagrant setup
-
-A [Vagrantfile](./Vagrantfile) has been included in the repo to simulate a complete HeaventClient setup on a linux ubuntu/bionic virtual machine (using virtualbox provider).
-
-One can refer to the shell scripts written within the Vagrantfile to get an insight of the complete environmental setup and dependencies required to build and run the HeavenClient binary.
-
-### Building/Running client via Vagrant
-
-All ssh commands must be run on a shell within context of the HeavenClient directory (this project)
-
-1. ```vagrant up```
-2. Login to the desktop environment via the virtualbox window with default vagrant credentials (vagrant:vagrant) - once the bootstrap script has completed execution
-   1. This is required to start up desktop environment (xfce)
-3. ```vagrant ssh -- -R 8484:localhost:8484 -R 7575:localhost:7575 -R 7576:localhost:7576 -R 7577:localhost:7577```
-   1. We SSH into the VM with reverse port-forwarding; this allows us to run/dev our [server](https://github.com/ronancpl/HeavenMS) on the host machine while allowing the client to connect to it and run on the VM
-4. ```cd /home/vagrant/Desktop/HeavenClient/build/```
-5. ```./HeavenClient```
-
-Note: To run the HeavenClient from the build directory; all the [relevant **.nx** files](./Util/NxFiles.h) must be available within the linux build directory
-
-Tip: Since the binary is built on the VM with a mounted/shared volume; the binary is also available/usable by a linux host
-
-## Docker Setup - web-vnc
-
-A [Dockerfile](./Dockerfile) has been included in the repo to simulate a complete HeaventClient setup on a linux ubuntu/bionic OS.
-
-The Docker setup utilizes [fcwu/docker-ubuntu-vnc-desktop](https://github.com/fcwu/docker-ubuntu-vnc-desktop) **web-based lxde VNC** solution to output HeavenClient GUI on a web browser at port **6080**.
-
-This allows the host to rely on minimal dependencies (other than nx files) for running HeavenClient.
-
-### Docker Pre-requisites
-
-- All [relevant](./Util/NxFiles.h) **.nx** files must be located in the **nx** directory
-- A [Settings](./Settings) file must be present in project root - instructions to create this [below](#building--runnning-client)
-  - This gives user ability to configure HeavenClient outside the container - on the host
-- Relevant audio passthrough device must be installed on the host
-  - Mac: [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/)
-  - Linux: [snd-aloop](./https://www.alsa-project.org/wiki/Matrix:Module-aloop)
-- [HeavenMS](https://github.com/ronancpl/HeavenMS) server running at port 8484 on host machine
-
-### Installing sound passthrough device
-
-#### Mac
-
-```sh
-# Install pulseaudio
-brew install pulseaudio
-
-# Run pulseaudio daemon
-pulseaudio --load=module-native-protocol-tcp --exit-idle-time=-1 --daemon
+```
+TwinleafStory/
+├── Audio/, Character/, Data/, Gameplay/, Graphics/,
+│   IO/, Net/, Template/, Util/          — Client source (C++)
+├── includes/nlnx/                       — NoLifeNx library
+├── thirdparty/                          — GLAD, miniaudio, stb
+├── server/                              — Cosmic server (Java, git subtree)
+├── tools/                               — wztonx, nxdump, setup scripts
+├── docs/                                — Architecture, setup, milestones, reference
+├── CMakeLists.txt                       — Client build
+└── build/                               — Build output + NX file symlinks
 ```
 
-Note: To stop sound passthrough daemon: ```pulseaudio --kill```
+## Quick Start (macOS)
 
-#### Linux
+```bash
+# 1. Install dependencies
+brew install cmake ninja glfw freetype lz4 asio
 
-```sh
-# Insert kernel module snd-aloop and specify 2 as the index of sound loop device
-sudo modprobe snd-aloop index=2
+# 2. Build the client
+mkdir -p build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
+ninja
+
+# 3. Set up NX files (see docs/setup/asset-setup.md)
+# NX files must be symlinked or copied into build/
+# Required: Character.nx, Effect.nx, Etc.nx, Item.nx, Map.nx,
+#   Mob.nx, Morph.nx, Npc.nx, Quest.nx, Reactor.nx, Skill.nx,
+#   Sound.nx, String.nx, TamingMob.nx, UI.nx
+
+# 4. Run
+./cosmic-client
 ```
 
-### Building & Runnning Client
+See [docs/setup/client-build-macos.md](docs/setup/client-build-macos.md) for detailed build instructions.
 
-1. Create Settings with server ip pointing to host
-   1. ```echo "ServerIP = host.docker.internal" > Settings```
-      1. This allows the HeavenClient application within the container to point to the running hosts IP (on which the server will be running)
-2. Build & Run container for your OS
-   1. Mac:
-      1. ```docker-compose -f docker-compose.yml -f docker-compose.mac.yml up --build```
-   2. Linux:
-      1. ```docker-compose -f docker-compose.yml -f docker-compose.linux.yml up --build```
-3. Run HeavenClient in the browser GUI at [localhost:6080](http://localhost:6080) by double clicking the HeavenClient icon
+## NX Files
 
-</br>
-Note: If the client fails to startup, then it is very likely something went wrong with the setup. The link doesn't show errors hence you will have to use the **LXTerminal** within the web-based GUI to run the client manually.
+The client requires 15 NX files converted from v83 WZ data (defined in [`Util/NxFiles.h`](Util/NxFiles.h)):
 
-- The HeaventClient binary is located within the **/root** folder of the container
-- You may need to restart your browser before trying to run the game after applying any fixes
-- You need to ```docker-compose down``` if you move your **.nx** files into the **nx/** difectory post container start-up (since symlinks are generated only when starting up fresh container)
+| File | Source |
+|------|--------|
+| Character.nx, Effect.nx, Etc.nx, Item.nx | v83 GMS WZ |
+| Map.nx (single file) | v83 GMS WZ |
+| Mob.nx, Morph.nx, Npc.nx, Quest.nx | v83 GMS WZ |
+| Reactor.nx, Skill.nx, Sound.nx, String.nx | v83 GMS WZ |
+| TamingMob.nx, UI.nx | v83 GMS WZ |
 
----
+NX files are not included in the repository (~6.9GB total). Convert from WZ using `tools/wztonx/` — see [docs/setup/asset-setup.md](docs/setup/asset-setup.md).
 
-## Donations
+## Client Stack
 
-If you feel obligated to donate, to further help and support all parties involved in the development of the HeavenClient project, you can donate using [this](https://paypal.me/pools/c/8frYNoobcY) link.
+| Layer | Technology |
+|-------|-----------|
+| Windowing | GLFW 3 |
+| Graphics | OpenGL 2.1 via GLAD (Metal backend on macOS) |
+| Audio | miniaudio (BGM + SFX via `ma_decoder_init_memory`) |
+| Fonts | FreeType |
+| Networking | ASIO (header-only, async TCP) |
+| NX Data | NoLifeNx (memory-mapped PKG4) |
+| Compression | lz4 (NX bitmap decompression) |
 
-Please remember this is ONLY for the HeavenClient development and will only be used in the support of helping further develop the client. *Also please remember to support Nexon as this is not meant to replace anything Nexon offers*
+## Current Status
 
-Another important note to remember is that HeavenClient is a free open-sourced client developed for personal use. Do NOT pay for any services requested by anyone in regards to this client. It will always remain open and free of charge. There is no intent to publish this code with any payment in mind. If that ever changes, donations and disclaimers for donations will be removed.
+**The client is playable.** Login, world select, character select, character creation, and entering the game all work. The server is stock Cosmic v83.
+
+- All 26 UI files ported from v167+ to v83 NX paths
+- Audio working (BGM looping + SFX fire-and-forget)
+- Full login flow, map loading, combat, mob/NPC spawning
+- 3 character creation paths (Explorer, Cygnus, Aran)
+
+See [docs/milestones/overview.md](docs/milestones/overview.md) for the project roadmap.
+
+## Documentation
+
+- **[docs/setup/](docs/setup/)** — Build guides, asset setup, dev environment
+- **[docs/architecture/](docs/architecture/)** — System design, protocols, asset pipeline
+- **[docs/milestones/](docs/milestones/)** — Project roadmap and phase tracking
+- **[docs/reference/](docs/reference/)** — v83 NX paths, opcodes, troubleshooting
+
+## Server
+
+The server is a git subtree of [Cosmic](https://github.com/P0nk/Cosmic) in `server/`. See [server/CLAUDE.md](server/CLAUDE.md) for architecture and deployment.
+
+```bash
+cd server
+./mvnw clean package
+java -jar target/cosmic-*.jar
+```
+
+## Credits
+
+- [HeavenClient](https://github.com/HeavenClient/HeavenClient) — Original client (`linux` branch, cross-platform engine)
+- [Cosmic](https://github.com/P0nk/Cosmic) — v83 GMS server emulator
+- [NoLifeNx](https://github.com/ryantpayton/NoLifeNx) — NX file reader library
+- [NoLifeWzToNx](https://github.com/NoLifeDev/NoLifeWzToNx) — WZ-to-NX converter
+- MapleStory community — v83 WZ data preservation
+
+## License
+
+[AGPL-3.0](LICENSE)

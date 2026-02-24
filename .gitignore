@@ -23,3 +23,16 @@ libs/
 
 # Vagrant
 .vagrant/
+
+# Server (Java)
+server/target/
+server/.idea/
+server/*.iml
+
+# Tools
+tools/wztonx/wztonx
+tools/wztonx/build/
+tools/nxdump/build/
+
+# Assets (never in git)
+*.wz

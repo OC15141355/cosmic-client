@@ -1,24 +1,40 @@
-# TwinleafStory Client (cosmic-client)
+# TwinleafStory — Client Context
 
-Native macOS + Windows MapleStory v83 client. Fork of HeavenClient `linux` branch, rebuilt for ARM64 macOS with v83 NX asset support.
+Mono-repo for TwinleafStory: custom MapleStory v83 private server + native client.
 
-## Vision
+## Project Structure
 
-Build a polished v83 MapleStory client with cherry-picked modern content. Part of the TwinleafStory project (custom server + native client). Target: the ultimate vanilla v83 experience with balance improvements and quality-of-life updates.
+```
+TwinleafStory/
+├── (root)         — Client source (C++17, CMake/Ninja, macOS ARM64)
+├── server/        — Cosmic server fork (Java 17, Maven, git subtree)
+├── tools/         — wztonx converter, nxdump inspector, setup scripts
+├── docs/          — Architecture, setup guides, milestones, reference
+└── build/         — Build output + NX file symlinks (.gitignored)
+```
+
+Each subdirectory has its own CLAUDE.md with component-specific context.
+
+## Client Overview
+
+Native macOS + Windows MapleStory v83 client. Fork of HeavenClient `linux` branch (cross-platform engine), fully ported to v83 NX data. All 26 UI files, 3 character creation paths, audio (BGM+SFX), and core gameplay working.
 
 ## Quick Start
 
 ```bash
-# Dependencies
 brew install cmake ninja glfw freetype lz4 asio
-
-# Build
 cd build && cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .. && ninja
-
-# NX files must be symlinked/copied into build/
-# Run from build/ directory
+# NX files must be symlinked/copied into build/ (see tools/scripts/setup-nx-symlinks.sh)
 ./cosmic-client
 ```
+
+## Cross-Cutting Conventions
+
+- **Git**: Branch `feature/client-*`, `feature/server-*`, `fix/*`, `docs/*`. Commit prefix: `[client]`, `[server]`, `[tools]`, `[docs]`.
+- **NX paths**: Always verify with `tools/nxdump/` before coding. v83 differs significantly from v167+.
+- **Assets**: NX files (~6.9GB) outside git. WZ source converted via `tools/wztonx/`.
+- **v83 comments**: Mark deviations with `// v83:` prefix.
+- **Builds**: Client = `ninja` in build/. Server = `./mvnw clean package` in server/. Tools = CMake in each tool dir.
 
 ## Architecture
 
