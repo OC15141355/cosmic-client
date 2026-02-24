@@ -102,8 +102,10 @@ namespace ms
 
 					//AfterLoginPacket("1111").dispatch();
 
+	
 					// Request the list of worlds and channels online.
 					ServerRequestPacket().dispatch();
+	
 				}
 			}
 		}
@@ -125,7 +127,9 @@ namespace ms
 		auto worldselect = UI::get().get_element<UIWorldSelect>();
 
 		if (!worldselect)
+		{
 			worldselect = UI::get().emplace<UIWorldSelect>();
+		}
 
 		// Parse all worlds
 		while (recv.available())
@@ -143,12 +147,11 @@ namespace ms
 
 				// Add the world selection screen to the UI
 				worldselect->draw_world();
-
 				// End of packet
 				return;
 			}
 		}
-	}
+		}
 
 	void CharlistHandler::handle(InPacket& recv) const
 	{
@@ -259,6 +262,29 @@ namespace ms
 				if (world.wid != -1 && !world.message.empty())
 					worldselect->add_recommended_world(world);
 			}
+		}
+	}
+
+	void SelectCharByVacHandler::handle(InPacket& recv) const
+	{
+		// v83: Cosmic sends getAfterLoginError(reason) as opcode 9.
+		// Format: short reason. Known codes:
+		//   7  = REMOTE_LOGGEDIN (account already logged in)
+		//   8  = COORDINATOR_ERROR (internal server error)
+		//   9  = generic session error
+		//   10 = too many connections / server busy
+		//   17 = invalid HWID format or HWID mismatch
+		if (recv.length() >= 2)
+		{
+			int16_t reason = recv.read_short();
+			std::cout << "Character selection error (opcode 9): reason=" << reason << std::endl;
+
+			if (reason == 17)
+				std::cout << "  -> Invalid HWID format. Check HardwareInfo.h serial is 8 hex chars." << std::endl;
+		}
+		else
+		{
+			std::cout << "Opcode 9: empty payload" << std::endl;
 		}
 	}
 }

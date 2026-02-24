@@ -29,36 +29,28 @@
 
 #include "Timer.h"
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <nlnx/nx.hpp>
 #include <string>
 
 namespace ms
 {
-	UICashShop::UICashShop() : preview_index(0), menu_index(1), promotion_index(0), mvp_grade(1), mvp_exp(0.07f), list_offset(0)
+	UICashShop::UICashShop() : preview_index(0), menu_index(1), list_offset(0)
 	{
 		nl::node CashShop = nl::nx::ui["CashShop.img"];
 		nl::node Base = CashShop["Base"];
 		nl::node backgrnd = Base["backgrnd"];
-		nl::node BestNew = Base["BestNew"];
 		nl::node Preview = Base["Preview"];
 		nl::node CSTab = CashShop["CSTab"];
-		nl::node CSGLChargeNX = CSTab["CSGLChargeNX"];
 		nl::node CSStatus = CashShop["CSStatus"];
-		nl::node CSPromotionBanner = CashShop["CSPromotionBanner"];
-		nl::node CSMVPBanner = CashShop["CSMVPBanner"];
 		nl::node CSItemSearch = CashShop["CSItemSearch"];
 		nl::node CSChar = CashShop["CSChar"];
 		nl::node CSList = CashShop["CSList"];
 		nl::node CSEffect = CashShop["CSEffect"];
 
-		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(BestNew, Point<int16_t>(139, 346));
+		// v83: Removed CSGLChargeNX, CSPromotionBanner, CSMVPBanner, Base/BestNew
+		// — none of these exist in v83 CashShop.img
 
-		BestNew_dim = Texture(BestNew).get_dimensions();
+		sprites.emplace_back(backgrnd);
 
 		for (size_t i = 0; i < 3; i++)
 			preview_sprites[i] = Preview[i];
@@ -68,66 +60,36 @@ namespace ms
 
 		buttons[Buttons::BtPreview1]->set_state(Button::State::PRESSED);
 
-		buttons[Buttons::BtExit] = std::make_unique<MapleButton>(CSTab["BtExit"], Point<int16_t>(5, 728));
-		buttons[Buttons::BtChargeNX] = std::make_unique<MapleButton>(CSGLChargeNX["BtChargeNX"], Point<int16_t>(5, 554));
-		buttons[Buttons::BtChargeRefresh] = std::make_unique<MapleButton>(CSGLChargeNX["BtChargeRefresh"], Point<int16_t>(92, 554));
+		// v83: BtExit is under CSStatus, not CSTab
+		buttons[Buttons::BtExit] = std::make_unique<MapleButton>(CSStatus["BtExit"], Point<int16_t>(5, 728));
+
+		// v83: CSStatus has BtCharge, BtCheck, BtCoupon (no BtWish, BtMileage, BtHelp)
+		buttons[Buttons::BtCharge] = std::make_unique<MapleButton>(CSStatus["BtCharge"], Point<int16_t>(5, 554));
+		buttons[Buttons::BtCheck] = std::make_unique<MapleButton>(CSStatus["BtCheck"], Point<int16_t>(92, 554));
+		buttons[Buttons::BtCoupon] = std::make_unique<MapleButton>(CSStatus["BtCoupon"], Point<int16_t>(950, 4));
 
 		for (size_t i = 0; i < 9; i++)
 			menu_tabs[i] = CSTab["Tab"][i];
 
-		buttons[Buttons::BtChargeRefresh] = std::make_unique<MapleButton>(CSGLChargeNX["BtChargeRefresh"], Point<int16_t>(92, 554));
-		buttons[Buttons::BtWish] = std::make_unique<MapleButton>(CSStatus["BtWish"], Point<int16_t>(226, 6));
-		buttons[Buttons::BtMileage] = std::make_unique<MapleButton>(CSStatus["BtMileage"], Point<int16_t>(869, 4));
-		buttons[Buttons::BtHelp] = std::make_unique<MapleButton>(CSStatus["BtHelp"], Point<int16_t>(997, 4));
-		buttons[Buttons::BtCoupon] = std::make_unique<MapleButton>(CSStatus["BtCoupon"], Point<int16_t>(950, 4));
-
-		Charset tab;
-
 		job_label = Text(Text::Font::A11B, Text::Alignment::LEFT, Color::Name::SUPERNOVA, "Illium");
 		name_label = Text(Text::Font::A11B, Text::Alignment::LEFT, Color::Name::WHITE, "ShomeiZekkou");
 
-		promotion_pos = Point<int16_t>(138, 40);
-		sprites.emplace_back(CSPromotionBanner["shadow"], promotion_pos);
-
-		promotion_sprites.emplace_back(CSPromotionBanner["basic"]);
-
-		buttons[Buttons::BtNext] = std::make_unique<MapleButton>(CSPromotionBanner["BtNext"], promotion_pos);
-		buttons[Buttons::BtPrev] = std::make_unique<MapleButton>(CSPromotionBanner["BtPrev"], promotion_pos);
-
-		for (size_t i = 0; i < 7; i++)
-			mvp_sprites[i] = CSMVPBanner["grade"][i];
-
-		mvp_pos = Point<int16_t>(63, 681);
-		buttons[Buttons::BtDetailPackage] = std::make_unique<MapleButton>(CSMVPBanner["BtDetailPackage"], mvp_pos);
-		buttons[Buttons::BtNonGrade] = std::make_unique<MapleButton>(CSMVPBanner["BtNonGrade"], mvp_pos);
-
-		buttons[Buttons::BtDetailPackage]->set_active(mvp_grade);
-		buttons[Buttons::BtNonGrade]->set_active(!mvp_grade);
-
-		mvp_gauge = Gauge(
-			Gauge::Type::CASHSHOP,
-			CSMVPBanner["gage"][0],
-			CSMVPBanner["gage"][2],
-			CSMVPBanner["gage"][1],
-			84,
-			0.0f
-		);
+		// v83: Removed CSPromotionBanner shadow + sprites + BtNext/BtPrev
+		// v83: Removed CSMVPBanner grade sprites + buttons + gauge
 
 		Point<int16_t> search_pos = Point<int16_t>(0, 36);
 		sprites.emplace_back(CSItemSearch["backgrnd"], search_pos);
 		sprites.emplace_back(CSItemSearch["search"], search_pos + Point<int16_t>(35, 8));
 
+		// v83: CSChar only has BtBuyAvatar, BtDefaultAvatar, BtTakeoffAvatar (no BtInventory, BtSaveAvatar)
 		buttons[Buttons::BtBuyAvatar] = std::make_unique<MapleButton>(CSChar["BtBuyAvatar"], Point<int16_t>(642, 305));
 		buttons[Buttons::BtDefaultAvatar] = std::make_unique<MapleButton>(CSChar["BtDefaultAvatar"], Point<int16_t>(716, 305));
-		buttons[Buttons::BtInventory] = std::make_unique<MapleButton>(CSChar["BtInventory"], Point<int16_t>(938, 305));
-		buttons[Buttons::BtSaveAvatar] = std::make_unique<MapleButton>(CSChar["BtSaveAvatar"], Point<int16_t>(864, 305));
 		buttons[Buttons::BtTakeoffAvatar] = std::make_unique<MapleButton>(CSChar["BtTakeoffAvatar"], Point<int16_t>(790, 305));
 
-		charge_charset = Charset(CSGLChargeNX["Number"], Charset::Alignment::RIGHT);
+		// v83: Removed charge_charset (CSGLChargeNX doesn't exist)
 
 		item_base = CSList["Base"];
-		item_line = Base["line"];
-		item_none = Base["noItem"];
+		// v83: Removed item_line (Base/line doesn't exist) and item_none (Base/noItem doesn't exist)
 
 		for (nl::node item_label : CSEffect)
 			item_labels.emplace_back(item_label);
@@ -203,23 +165,10 @@ namespace ms
 		size_t length = job_label.width();
 		name_label.draw(label_pos + Point<int16_t>(length + 10, 0));
 
-		promotion_sprites[promotion_index].draw(position + promotion_pos, inter);
-
-		mvp_sprites[mvp_grade].draw(position + mvp_pos, inter);
-		mvp_gauge.draw(position + mvp_pos);
-
-		Point<int16_t> charge_pos = position + Point<int16_t>(107, 388);
-
-		charge_charset.draw("0", charge_pos + Point<int16_t>(0, 30 * 1));
-		charge_charset.draw("3,300", charge_pos + Point<int16_t>(0, 30 * 2));
-		charge_charset.draw("0", charge_pos + Point<int16_t>(0, 30 * 3));
-		charge_charset.draw("8,698,565", charge_pos + Point<int16_t>(0, 30 * 4));
-		charge_charset.draw("0", charge_pos + Point<int16_t>(0, 30 * 5));
-
-		if (items.size() > 0)
-			item_line.draw(position + Point<int16_t>(139, 566), inter);
-		else
-			item_none.draw(position + Point<int16_t>(137, 372) + Point<int16_t>(BestNew_dim.x() / 2, list_slider.getvertical().length() / 2) - item_none.get_dimensions() / 2, inter);
+		// v83: Removed promotion_sprites draw (CSPromotionBanner doesn't exist)
+		// v83: Removed mvp_sprites + mvp_gauge draw (CSMVPBanner doesn't exist)
+		// v83: Removed charge_charset draw (CSGLChargeNX doesn't exist)
+		// v83: Removed item_line + item_none draw (Base/line, Base/noItem don't exist)
 
 		for (size_t i = 0; i < MAX_ITEMS; i++)
 		{
@@ -261,7 +210,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		mvp_gauge.update(mvp_exp);
+		// v83: Removed mvp_gauge.update (CSMVPBanner doesn't exist)
 	}
 
 	Button::State UICashShop::button_pressed(uint16_t buttonid)
@@ -300,39 +249,8 @@ namespace ms
 
 			return Button::State::NORMAL;
 		}
-		case Buttons::BtNext:
-		{
-			size_t size = promotion_sprites.size() - 1;
-
-			promotion_index++;
-
-			if (promotion_index > size)
-				promotion_index = 0;
-
-			return Button::State::NORMAL;
-		}
-		case Buttons::BtPrev:
-		{
-			size_t size = promotion_sprites.size() - 1;
-
-			promotion_index--;
-
-			if (promotion_index < 0)
-				promotion_index = size;
-
-			return Button::State::NORMAL;
-		}
-		case Buttons::BtChargeNX:
-		{
-			std::string url = Configuration::get().get_chargenx();
-
-//todo: open url on linux
-#ifdef WIN32
-			ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-#endif
-
-			return Button::State::NORMAL;
-		}
+		// v83: Removed BtNext/BtPrev (CSPromotionBanner doesn't exist)
+		// v83: Removed BtChargeNX (CSGLChargeNX doesn't exist)
 		default:
 			break;
 		}

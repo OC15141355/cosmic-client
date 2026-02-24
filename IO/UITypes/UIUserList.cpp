@@ -28,28 +28,28 @@ namespace ms
 	UIUserList::UIUserList(uint16_t t) : UIDragElement<PosUSERLIST>(Point<int16_t>(260, 20)), tab(t)
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		UserList = nl::nx::ui["UIWindow2.img"]["UserList"];
-		nl::node Main = UserList["Main"];
+		UserList = nl::nx::ui["UIWindow.img"]["UserList"]; // v83: flat (no Main/ intermediate)
 
-		sprites.emplace_back(Main["backgrnd"]);
+		sprites.emplace_back(UserList["backgrnd"]);
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(244, 7));
 
-		nl::node taben = Main["Tab"]["enabled"];
-		nl::node tabdis = Main["Tab"]["disabled"];
+		nl::node taben = UserList["Tab"]["enabled"];
+		nl::node tabdis = UserList["Tab"]["disabled"];
 
 		buttons[Buttons::BT_TAB_FRIEND] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
 		buttons[Buttons::BT_TAB_PARTY] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"]);
 		buttons[Buttons::BT_TAB_BOSS] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
 		buttons[Buttons::BT_TAB_BLACKLIST] = std::make_unique<TwoSpriteButton>(tabdis["3"], taben["3"]);
 
-		// Party Tab
-		nl::node Party = Main["Party"];
+		// Party Tab — v83: Party is directly under UserList (no Main/)
+		nl::node Party = UserList["Party"];
 		nl::node PartySearch = Party["PartySearch"];
 
 		party_tab = Tab::PARTY_MINE;
 		party_title = Party["title"];
 
+		// v83: Sheet2 may not exist — null sprites are safe
 		for (size_t i = 0; i <= 4; i++)
 			party_mine_grid[i] = UserList["Sheet2"][i];
 
@@ -88,8 +88,8 @@ namespace ms
 							  party_rowmax, [](bool)
 							  {});
 
-		// Buddy Tab
-		nl::node Friend = Main["Friend"];
+		// Buddy Tab — v83: Friend is directly under UserList (no Main/)
+		nl::node Friend = UserList["Friend"];
 
 		friend_tab = Tab::FRIEND_ALL;
 		friend_sprites.emplace_back(Friend["title"]);
@@ -134,8 +134,8 @@ namespace ms
 								friends_unitrows, friends_rowmax, [](bool)
 								{});
 
-		// Boss tab
-		nl::node Boss = Main["Boss"];
+		// Boss tab — v83: Boss may not exist (not in v83 UserList), null = invisible (safe)
+		nl::node Boss = UserList["Boss"];
 
 		boss_sprites.emplace_back(Boss["base"]);
 		boss_sprites.emplace_back(Boss["base3"]);
@@ -167,8 +167,8 @@ namespace ms
 		buttons[Buttons::BT_BOSS_DIFF_R]->set_active(false);
 		buttons[Buttons::BT_BOSS_GO]->set_active(false);
 
-		// Blacklist tab
-		nl::node Blacklist = Main["Blacklist"];
+		// Blacklist tab — v83: BlackList directly under UserList (no Main/)
+		nl::node Blacklist = UserList["BlackList"];
 
 		blacklist_title = Blacklist["base"];
 
@@ -318,8 +318,9 @@ namespace ms
 		uint8_t oldtab = tab;
 		tab = tabid;
 
+		// v83: flat structure, no Main/
 		background =
-				tabid == Buttons::BT_TAB_BOSS ? UserList["Main"]["Boss"]["backgrnd3"] : UserList["Main"]["backgrnd2"];
+				tabid == Buttons::BT_TAB_BOSS ? UserList["Boss"]["backgrnd3"] : UserList["backgrnd2"];
 
 		if (oldtab != tab)
 			buttons[Buttons::BT_TAB_FRIEND + oldtab]->set_state(Button::State::NORMAL);

@@ -20,8 +20,6 @@
 
 #include "../UIElement.h"
 
-#include "../Components/Charset.h"
-#include "../Components/Gauge.h"
 #include "../Components/Slider.h"
 
 #include "../../Data/ItemData.h"
@@ -108,31 +106,26 @@ namespace ms
 			const ItemData& data;
 		};
 
+		// v83: Removed buttons that don't exist in v83 CashShop.img:
+		// BtChargeNX, BtChargeRefresh (CSGLChargeNX doesn't exist)
+		// BtWish, BtMileage, BtHelp (CSStatus only has BtCharge/BtCheck/BtCoupon/BtExit)
+		// BtNext, BtPrev (CSPromotionBanner doesn't exist)
+		// BtDetailPackage, BtNonGrade (CSMVPBanner doesn't exist)
+		// BtInventory, BtSaveAvatar (CSChar only has BtBuyAvatar/BtDefaultAvatar/BtTakeoffAvatar)
 		enum Buttons : uint16_t
 		{
 			BtPreview1,
 			BtPreview2,
 			BtPreview3,
 			BtExit,
-			BtChargeNX,
-			BtChargeRefresh,
-			BtWish,
-			BtMileage,
-			BtHelp,
+			BtCharge,
+			BtCheck,
 			BtCoupon,
-			BtNext,
-			BtPrev,
-			BtDetailPackage,
-			BtNonGrade,
 			BtBuyAvatar,
 			BtDefaultAvatar,
-			BtInventory,
-			BtSaveAvatar,
 			BtTakeoffAvatar,
 			BtBuy
 		};
-
-		Point<int16_t> BestNew_dim;
 
 		Sprite preview_sprites[3];
 		uint8_t preview_index;
@@ -143,21 +136,13 @@ namespace ms
 		Text job_label;
 		Text name_label;
 
-		std::vector<Sprite> promotion_sprites;
-		Point<int16_t> promotion_pos;
-		int8_t promotion_index;
-
-		Sprite mvp_sprites[7];
-		Point<int16_t> mvp_pos;
-		uint8_t mvp_grade;
-		Gauge mvp_gauge;
-		float_t mvp_exp;
-
-		Charset charge_charset;
+		// v83: Removed promotion_sprites/pos/index (CSPromotionBanner doesn't exist)
+		// v83: Removed mvp_sprites/pos/grade/gauge/exp (CSMVPBanner doesn't exist)
+		// v83: Removed charge_charset (CSGLChargeNX doesn't exist)
+		// v83: Removed BestNew_dim (Base/BestNew doesn't exist)
+		// v83: Removed item_line, item_none (Base/line, Base/noItem don't exist)
 
 		Sprite item_base;
-		Sprite item_line;
-		Sprite item_none;
 		std::vector<Sprite> item_labels;
 		std::vector<Item> items;
 		Text item_name[MAX_ITEMS];

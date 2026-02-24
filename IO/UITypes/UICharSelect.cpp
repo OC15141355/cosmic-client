@@ -25,6 +25,7 @@
 
 #include "../Components/AreaButton.h"
 #include "../Components/MapleButton.h"
+#include "../Components/TwoSpriteButton.h"
 
 #include "../../Configuration.h"
 
@@ -51,7 +52,8 @@ namespace ms
 																									slots(s),
 																									require_pic(rp)
 	{
-		burning_character = true;
+		// v83: no burning event
+		burning_character = false;
 
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
@@ -90,41 +92,22 @@ namespace ms
 		nl::node Common = Login["Common"];
 		nl::node CharSelect = Login["CharSelect"];
 		nl::node selectWorld = Common["selectWorld"];
-		nl::node selectedWorld = CharSelect["selectedWorld"];
-		nl::node pageNew = CharSelect["pageNew"];
 
 		world_dimensions = Texture(selectWorld).get_dimensions();
 
-		uint16_t world;
-		uint8_t world_id = Configuration::get().get_worldid();
-		uint8_t channel_id = Configuration::get().get_channelid();
-
-		if (auto worldselect = UI::get().get_element<UIWorldSelect>())
-			world = worldselect->get_worldbyid(world_id);
-
+		// v83: no selectedWorld node — just show the selectWorld header
 		world_sprites.emplace_back(selectWorld, worldpos);
-		world_sprites.emplace_back(selectedWorld["icon"][world], worldpos - Point<int16_t>(12, -1));
-		world_sprites.emplace_back(selectedWorld["name"][world], worldpos - Point<int16_t>(8, 1));
-		world_sprites.emplace_back(selectedWorld["ch"][channel_id], worldpos - Point<int16_t>(0, 1));
 
+		// v83: background from Map.nx (ani/17-19 don't exist in v83)
 		nl::node map = nl::nx::map["Back"]["login.img"];
-		nl::node ani = map["ani"];
-
+		nl::node obj = nl::nx::map["Obj"]["login.img"];
 		sprites.emplace_back(map["back"]["13"], Point<int16_t>(392, 297));
-		sprites.emplace_back(ani["17"], Point<int16_t>(151, 283));
-		sprites.emplace_back(ani["18"], Point<int16_t>(365, 252));
-		sprites.emplace_back(ani["19"], Point<int16_t>(191, 208));
+		sprites.emplace_back(obj["CharSelect"]["signboard"]["0"]["0"], Point<int16_t>(400, 300));
 		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
 		sprites.emplace_back(Common["step"]["2"], Point<int16_t>(40, 0));
 
-		burning_notice = Common["Burning"]["BurningNotice"];
-		burning_count = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE, "1");
-
 		charinfo = CharSelect["charInfo"];
-		charslot = CharSelect["charSlot"]["0"];
-		pagebase = pageNew["base"]["0"];
-		pagenumber = Charset(pageNew["number"], Charset::Alignment::LEFT);
-		pagenumberpos = pageNew["numberpos"];
+		// v83: no charSlot, pageNew nodes — leave as empty textures
 
 		signpost[0] = CharSelect["adventure"]["0"];
 		signpost[1] = CharSelect["knight"]["0"];
@@ -135,26 +118,21 @@ namespace ms
 		buttons[Buttons::CHARACTER_SELECT] = std::make_unique<MapleButton>(CharSelect["BtSelect"], character_sel_pos);
 		buttons[Buttons::CHARACTER_NEW] = std::make_unique<MapleButton>(CharSelect["BtNew"], character_new_pos);
 		buttons[Buttons::CHARACTER_DELETE] = std::make_unique<MapleButton>(CharSelect["BtDelete"], character_del_pos);
-		buttons[Buttons::PAGELEFT] = std::make_unique<MapleButton>(CharSelect["pageL"], Point<int16_t>(98, 491));
-		buttons[Buttons::PAGERIGHT] = std::make_unique<MapleButton>(CharSelect["pageR"], Point<int16_t>(485, 491));
-		buttons[Buttons::CHANGEPIC] = std::make_unique<MapleButton>(Common["BtChangePIC"], Point<int16_t>(0, 45));
-		buttons[Buttons::RESETPIC] = std::make_unique<MapleButton>(Login["WorldSelect"]["BtResetPIC"],
-																   Point<int16_t>(0, 85));
-		buttons[Buttons::EDITCHARLIST] = std::make_unique<MapleButton>(CharSelect["EditCharList"]["BtCharacter"],
-																	   Point<int16_t>(-1, 118));
+
+		// v83: pageL/pageR have 0/0 (normal) and 1/0 (pressed) — use TwoSpriteButton
+		nl::node pageL = CharSelect["pageL"];
+		nl::node pageR = CharSelect["pageR"];
+		buttons[Buttons::PAGELEFT] = std::make_unique<TwoSpriteButton>(pageL["0"]["0"], pageL["1"]["0"], Point<int16_t>(98, 491));
+		buttons[Buttons::PAGERIGHT] = std::make_unique<TwoSpriteButton>(pageR["0"]["0"], pageR["1"]["0"], Point<int16_t>(485, 491));
+
+		// v83: no BtChangePIC, BtResetPIC, EditCharList — skip these buttons
 		buttons[Buttons::BACK] = std::make_unique<MapleButton>(Common["BtStart"], Point<int16_t>(0, 515));
 
 		for (size_t i = 0; i < PAGESIZE; i++)
 			buttons[Buttons::CHARACTER_SLOT0 + i] = std::make_unique<AreaButton>(get_character_slot_pos(i, 105, 144),
 																				 Point<int16_t>(50, 90));
 
-		if (require_pic == 0)
-		{
-			buttons[Buttons::CHANGEPIC]->set_active(false);
-			buttons[Buttons::RESETPIC]->set_active(false);
-		}
-
-		levelset = Charset(CharSelect["lv"], Charset::Alignment::CENTER);
+		// v83: no lv charset node — levelset stays empty
 		namelabel = OutlinedText(Text::Font::A15B, Text::Alignment::CENTER, Color::Name::WHITE,
 								 Color::Name::IRISHCOFFEE);
 
@@ -743,16 +721,9 @@ namespace ms
 				}
 			}
 				break;
+			// v83: CHANGEPIC, RESETPIC, EDITCHARLIST not present
 			case Buttons::CHANGEPIC:
-				break;
 			case Buttons::RESETPIC:
-			{
-				std::string url = Configuration::get().get_resetpic();
-
-				// TODO: (rich) fix
-				//ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-			}
-				break;
 			case Buttons::EDITCHARLIST:
 				break;
 			case Buttons::BACK:

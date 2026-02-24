@@ -35,50 +35,33 @@ namespace ms
 	UIStatsInfo::UIStatsInfo(const CharStats &st) : UIDragElement<PosSTATS>(Point<int16_t>(212, 20)), stats(st)
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node Stat = nl::nx::ui["UIWindow4.img"]["Stat"];
-		nl::node main = Stat["main"];
-		nl::node detail = Stat["detail"];
-		nl::node abilityTitle = detail["abilityTitle"];
-		nl::node metierLine = detail["metierLine"];
+		nl::node Stat = nl::nx::ui["UIWindow.img"]["Stat"]; // v83: flat structure (no main/ or detail/)
 
-		sprites.emplace_back(main["backgrnd"]);
-		sprites.emplace_back(main["backgrnd2"]);
-		sprites.emplace_back(main["backgrnd3"]);
+		sprites.emplace_back(Stat["backgrnd"]);
+		sprites.emplace_back(Stat["backgrnd2"]);
+		// v83: no backgrnd3 under Stat, skip
 
-		textures_detail.emplace_back(detail["backgrnd"]);
-		textures_detail.emplace_back(detail["backgrnd2"]);
-		textures_detail.emplace_back(detail["backgrnd3"]);
-		textures_detail.emplace_back(detail["backgrnd4"]);
-
-		abilities[Ability::RARE] = abilityTitle["rare"]["0"];
-		abilities[Ability::EPIC] = abilityTitle["epic"]["0"];
-		abilities[Ability::UNIQUE] = abilityTitle["unique"]["0"];
-		abilities[Ability::LEGENDARY] = abilityTitle["legendary"]["0"];
-		abilities[Ability::NONE] = abilityTitle["normal"]["0"];
-
-		inner_ability[true] = metierLine["activated"]["0"];
-		inner_ability[false] = metierLine["disabled"]["0"];
+		// v83: detail panel doesn't exist — abilityTitle, metierLine not in v83
+		// Leave textures_detail and abilities/inner_ability as empty textures (safe for draw)
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(190, 6));
-		buttons[Buttons::BT_HP] = std::make_unique<MapleButton>(main["BtHpUp"]);
-		buttons[Buttons::BT_MP] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0,
-																							   18));        // TODO: "BtMpUp" not Working
-		buttons[Buttons::BT_STR] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0,
-																								87));    // TODO: "BtStrUp" not working
-		buttons[Buttons::BT_DEX] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0,
-																								105));    // TODO: "BtDexUp" not working
-		buttons[Buttons::BT_INT] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0,
-																								123));    // TODO: "BtIntUp" not working
-		buttons[Buttons::BT_LUK] = std::make_unique<MapleButton>(main["BtHpUp"], Point<int16_t>(0,
-																								141));    // TODO: "BtLukUp" not working
-		buttons[Buttons::BT_AUTO] = std::make_unique<MapleButton>(main["BtAuto"]);
-		buttons[Buttons::BT_HYPERSTATOPEN] = std::make_unique<MapleButton>(main["BtHyperStatOpen"]);
-		buttons[Buttons::BT_HYPERSTATCLOSE] = std::make_unique<MapleButton>(main["BtHyperStatClose"]);
-		buttons[Buttons::BT_DETAILOPEN] = std::make_unique<MapleButton>(main["BtDetailOpen"]);
-		buttons[Buttons::BT_DETAILCLOSE] = std::make_unique<MapleButton>(main["BtDetailClose"]);
-		buttons[Buttons::BT_ABILITY] = std::make_unique<MapleButton>(detail["BtAbility"], Point<int16_t>(212, 0));
-		buttons[Buttons::BT_DETAIL_DETAILCLOSE] = std::make_unique<MapleButton>(detail["BtHpUp"],
-																				Point<int16_t>(212, 0));
+		// v83: BtApUp exists, use it for all AP buttons (same button, different positions)
+		buttons[Buttons::BT_HP] = std::make_unique<MapleButton>(Stat["BtApUp"]);
+		buttons[Buttons::BT_MP] = std::make_unique<MapleButton>(Stat["BtApUp"], Point<int16_t>(0, 18));
+		buttons[Buttons::BT_STR] = std::make_unique<MapleButton>(Stat["BtApUp"], Point<int16_t>(0, 87));
+		buttons[Buttons::BT_DEX] = std::make_unique<MapleButton>(Stat["BtApUp"], Point<int16_t>(0, 105));
+		buttons[Buttons::BT_INT] = std::make_unique<MapleButton>(Stat["BtApUp"], Point<int16_t>(0, 123));
+		buttons[Buttons::BT_LUK] = std::make_unique<MapleButton>(Stat["BtApUp"], Point<int16_t>(0, 141));
+		buttons[Buttons::BT_AUTO] = std::make_unique<MapleButton>(Stat["BtAuto"]);
+		// v83: BtHyperStatOpen/Close don't exist — null = invisible (safe)
+		buttons[Buttons::BT_HYPERSTATOPEN] = std::make_unique<MapleButton>(Stat["BtHyperStatOpen"]);
+		buttons[Buttons::BT_HYPERSTATCLOSE] = std::make_unique<MapleButton>(Stat["BtHyperStatClose"]);
+		// v83: BtDetail exists in v83 Stat
+		buttons[Buttons::BT_DETAILOPEN] = std::make_unique<MapleButton>(Stat["BtDetail"]);
+		buttons[Buttons::BT_DETAILCLOSE] = std::make_unique<MapleButton>(Stat["BtDetail"]);
+		// v83: detail panel doesn't exist, disable detail-related buttons
+		buttons[Buttons::BT_ABILITY] = std::make_unique<MapleButton>(Stat["BtAbility"]);
+		buttons[Buttons::BT_DETAIL_DETAILCLOSE] = std::make_unique<MapleButton>(Stat["BtDetail"]);
 
 		buttons[Buttons::BT_HYPERSTATOPEN]->set_active(false);
 		buttons[Buttons::BT_DETAILCLOSE]->set_active(false);

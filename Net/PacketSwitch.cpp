@@ -42,6 +42,8 @@ namespace ms
 		/// Login 1
 		LOGIN_RESULT = 0,
 		SERVERSTATUS = 3,
+		// v83: opcode 9 = server response after character selection with PIC
+		SELECT_CHARACTER_BY_VAC = 9,
 		SERVERLIST = 10,
 		CHARLIST = 11,
 		SERVER_IP = 12,
@@ -129,8 +131,21 @@ namespace ms
 		/// Player Interaction
 		CHAR_INFO = 61,
 
+		/// v83: Social/System
+		CLAIM_STATUS_CHANGED = 47,
+		SET_GENDER = 58,
+		BUDDYLIST = 63,
+		FAMILY_INFO_RESULT = 95,
+		FAMILY_PRIVILEGE_LIST = 100,
+		QUICKSLOT_INIT = 159,
+		SET_NPC_SCRIPTABLE = 263,
+		AUTO_HP_POT = 336,
+		AUTO_MP_POT = 337,
+
 		/// Cash Shop
-		SET_CASH_SHOP = 127
+		SET_CASH_SHOP = 127,
+		CS_OPERATION = 324,
+		CS_UPDATE = 325
 	};
 
 	PacketSwitch::PacketSwitch()
@@ -144,10 +159,13 @@ namespace ms
 		emplace<SERVERLIST, ServerlistHandler>();
 		emplace<CHARLIST, CharlistHandler>();
 		emplace<SERVER_IP, ServerIPHandler>();
+		// v83: opcode 9 — server sends this after SELECT_CHAR_PIC, format TBD
+		emplace<SELECT_CHARACTER_BY_VAC, SelectCharByVacHandler>();
 		emplace<CHARNAME_RESPONSE, CharnameResponseHandler>();
 		emplace<ADD_NEWCHAR_ENTRY, AddNewCharEntryHandler>();
 		emplace<DELCHAR_RESPONSE, DeleteCharResponseHandler>();
-		emplace<RECOMMENDED_WORLDS, RecommendedWorldsHandler>();
+		// v83: skip RECOMMENDED_WORLDS (opcode 27) — packet format differs from v167+
+		// emplace<RECOMMENDED_WORLDS, RecommendedWorldsHandler>();
 
 		// SetField handlers
 		emplace<SET_FIELD, SetFieldHandler>();
@@ -210,10 +228,23 @@ namespace ms
 
 		// Cash Shop
 		emplace<SET_CASH_SHOP, SetCashShopHandler>();
+		emplace<CS_OPERATION, CashShopOperationHandler>();
+		emplace<CS_UPDATE, CashShopUpdateHandler>();
 
 		// TODO: New handlers, they need coded and moved to a proper file.
 		emplace<CHECK_SPW_RESULT, CheckSpwResultHandler>();
 		emplace<FIELD_EFFECT, FieldEffectHandler>();
+
+		// v83: In-game handlers (stubs — silence unhandled opcode warnings)
+		emplace<QUICKSLOT_INIT, QuickSlotInitHandler>();
+		emplace<AUTO_HP_POT, AutoHpPotHandler>();
+		emplace<AUTO_MP_POT, AutoMpPotHandler>();
+		emplace<BUDDYLIST, BuddyListHandler>();
+		emplace<FAMILY_INFO_RESULT, FamilyInfoHandler>();
+		emplace<FAMILY_PRIVILEGE_LIST, FamilyPrivilegeHandler>();
+		emplace<CLAIM_STATUS_CHANGED, ClaimStatusHandler>();
+		emplace<SET_GENDER, SetGenderHandler>();
+		emplace<SET_NPC_SCRIPTABLE, SetNpcScriptableHandler>();
 	}
 
 	void PacketSwitch::forward(const int8_t* bytes, size_t length) const

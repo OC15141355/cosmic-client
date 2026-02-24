@@ -86,7 +86,7 @@ namespace ms
 		tab_source[Buttons::BT_TAB3] = "Android";
 
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node Equip = nl::nx::ui["UIWindow4.img"]["Equip"];
+		nl::node Equip = nl::nx::ui["UIWindow.img"]["Equip"]; // v83: was UIWindow4.img
 
 		background[Buttons::BT_TAB0] = Equip[tab_source[Buttons::BT_TAB0]]["backgrnd"];
 		background[Buttons::BT_TAB1] = Equip[tab_source[Buttons::BT_TAB1]]["backgrnd"];

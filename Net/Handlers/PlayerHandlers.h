@@ -104,4 +104,25 @@ namespace ms
 	{
 		void handle(InPacket& recv) const override;
 	};
+
+	// v83: Initializes quickslot key layout
+	// Opcode: QUICKSLOT_INIT(159)
+	class QuickSlotInitHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Sets auto HP potion item
+	// Opcode: AUTO_HP_POT(336)
+	class AutoHpPotHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Sets auto MP potion item
+	// Opcode: AUTO_MP_POT(337)
+	class AutoMpPotHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
 }

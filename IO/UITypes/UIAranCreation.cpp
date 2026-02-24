@@ -39,57 +39,53 @@ namespace ms
 {
 	UIAranCreation::UIAranCreation() : UIElement(Point<int16_t>(0, 0), Point<int16_t>(800, 600))
 	{
-		gender = false;
 		charSet = false;
 		named = false;
+		female = false;
 
 		std::string version_text = Configuration::get().get_version();
 		version = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::LEMONGRASS, "Ver. " + version_text);
 
 		nl::node Login = nl::nx::ui["Login.img"];
 		nl::node Common = Login["Common"];
-		nl::node CustomizeChar = Login["CustomizeChar"]["2000"];
+		// v83: NewCharAran instead of CustomizeChar/2000
+		nl::node NewChar = Login["NewCharAran"];
 		nl::node back = nl::nx::map["Back"]["login.img"]["back"];
-		nl::node board = CustomizeChar["board"];
-		nl::node genderSelect = CustomizeChar["genderSelect"];
 
 		sky = back["2"];
 		cloud = back["27"];
 
 		sprites.emplace_back(back["33"], Point<int16_t>(256, 299));
 		sprites.emplace_back(back["34"], Point<int16_t>(587, 157));
-		sprites_gender_select.emplace_back(board["genderTop"], Point<int16_t>(491, 168));
-		sprites_gender_select.emplace_back(board["boardMid"], Point<int16_t>(491, 220));
-		sprites_gender_select.emplace_back(board["boardBottom"], Point<int16_t>(491, 313));
-		sprites_lookboard.emplace_back(CustomizeChar["charSet"], Point<int16_t>(473, 103));
 
+		// v83: charSet panel background
+		sprites_lookboard.emplace_back(NewChar["charSet"], Point<int16_t>(473, 103));
+
+		// v83: avatarSel/0-6 category labels
 		for (size_t i = 0; i <= 6; i++)
-			sprites_lookboard.emplace_back(CustomizeChar["avatarSel"][i]["normal"],
+			sprites_lookboard.emplace_back(NewChar["avatarSel"][i]["normal"],
 										   Point<int16_t>(504, 187 + (i * 18)));
 
-		buttons[Buttons::BT_CHARC_GENDER_M] = std::make_unique<MapleButton>(genderSelect["male"],
-																			Point<int16_t>(439, 106));
-		buttons[Buttons::BT_CHARC_GEMDER_F] = std::make_unique<MapleButton>(genderSelect["female"],
-																			Point<int16_t>(437, 106));
-		buttons[Buttons::BT_CHARC_SKINL] = std::make_unique<MapleButton>(CustomizeChar["BtLeft"],
+		// v83: Only skin L/R for Aran (other appearance is fixed)
+		buttons[Buttons::BT_CHARC_SKINL] = std::make_unique<MapleButton>(NewChar["BtLeft"],
 																		 Point<int16_t>(562, 187 + (2 * 18)));
-		buttons[Buttons::BT_CHARC_SKINR] = std::make_unique<MapleButton>(CustomizeChar["BtRight"],
+		buttons[Buttons::BT_CHARC_SKINR] = std::make_unique<MapleButton>(NewChar["BtRight"],
 																		 Point<int16_t>(699, 187 + (2 * 18)));
-		buttons[Buttons::BT_CHARC_OK] = std::make_unique<MapleButton>(CustomizeChar["BtYes"], Point<int16_t>(520, 397));
-		buttons[Buttons::BT_CHARC_CANCEL] = std::make_unique<MapleButton>(CustomizeChar["BtNo"],
-																		  Point<int16_t>(594, 397));
 
-		buttons[Buttons::BT_CHARC_SKINL]->set_active(false);
-		buttons[Buttons::BT_CHARC_SKINR]->set_active(false);
+		buttons[Buttons::BT_CHARC_OK] = std::make_unique<MapleButton>(NewChar["BtYes"],
+																	  Point<int16_t>(533, 368));
+		buttons[Buttons::BT_CHARC_CANCEL] = std::make_unique<MapleButton>(NewChar["BtNo"],
+																		  Point<int16_t>(607, 368));
 
-		nameboard = CustomizeChar["charName"];
+		nameboard = NewChar["charName"];
 		namechar = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::WHITE,
 							 Rectangle<int16_t>(Point<int16_t>(524, 196), Point<int16_t>(630, 253)), 12);
 
 		sprites.emplace_back(Common["frame"], Point<int16_t>(400, 300));
 		sprites.emplace_back(Common["step"]["3"], Point<int16_t>(40, 0));
 
-		buttons[Buttons::BT_BACK] = std::make_unique<MapleButton>(Login["Common"]["BtStart"], Point<int16_t>(0, 515));
+		buttons[Buttons::BT_BACK] = std::make_unique<MapleButton>(Common["BtStart"],
+																  Point<int16_t>(0, 515));
 
 		namechar.set_state(Textfield::DISABLED);
 
@@ -172,7 +168,6 @@ namespace ms
 			}
 		}
 
-		female = false;
 		randomize_look();
 
 		newchar.set_direction(true);
@@ -191,67 +186,46 @@ namespace ms
 		cloud.draw(Point<int16_t>(cloudx, 310));
 		cloud.draw(Point<int16_t>(cloudx + cloud.width(), 310));
 
-		if (!gender)
+		if (!charSet)
 		{
-			for (size_t i = 0; i < sprites_gender_select.size(); i++)
-			{
-				if (i == 1)
-				{
-					for (size_t f = 0; f <= 4; f++)
-						sprites_gender_select[i].draw(position + Point<int16_t>(0, 24 * f), inter);
-				} else
-				{
-					sprites_gender_select[i].draw(position, inter);
-				}
-			}
+			// v83: Customize appearance stage (Aran: skin only)
+			UIElement::draw_sprites(inter);
 
-			UIElement::draw(inter);
+			for (auto &sprite : sprites_lookboard)
+				sprite.draw(position, inter);
+
+			facename.draw(Point<int16_t>(647, 183 + (0 * 18)));
+			hairname.draw(Point<int16_t>(647, 183 + (1 * 18)));
+			bodyname.draw(Point<int16_t>(647, 183 + (2 * 18)));
+			topname.draw(Point<int16_t>(647, 183 + (3 * 18)));
+			botname.draw(Point<int16_t>(647, 183 + (4 * 18)));
+			shoename.draw(Point<int16_t>(647, 183 + (5 * 18)));
+			wepname.draw(Point<int16_t>(647, 183 + (6 * 18)));
 
 			newchar.draw(Point<int16_t>(394, 339), inter);
-		} else
+
+			UIElement::draw_buttons(inter);
+		}
+		else if (!named)
 		{
-			if (!charSet)
-			{
-				UIElement::draw_sprites(inter);
+			// v83: Name entry stage
+			UIElement::draw_sprites(inter);
 
-				for (auto &sprite : sprites_lookboard)
-					sprite.draw(position, inter);
+			nameboard.draw(Point<int16_t>(489, 106));
 
-				facename.draw(Point<int16_t>(647, 183 + (0 * 18)));
-				hairname.draw(Point<int16_t>(647, 183 + (1 * 18)));
-				bodyname.draw(Point<int16_t>(647, 183 + (2 * 18)));
-				topname.draw(Point<int16_t>(647, 183 + (3 * 18)));
-				botname.draw(Point<int16_t>(647, 183 + (4 * 18)));
-				shoename.draw(Point<int16_t>(647, 183 + (5 * 18)));
-				wepname.draw(Point<int16_t>(647, 183 + (6 * 18)));
+			namechar.draw(position);
+			newchar.draw(Point<int16_t>(394, 339), inter);
 
-				newchar.draw(Point<int16_t>(394, 339), inter);
+			UIElement::draw_buttons(inter);
+		}
+		else
+		{
+			// v83: Waiting for server response
+			UIElement::draw_sprites(inter);
 
-				UIElement::draw_buttons(inter);
-			} else
-			{
-				if (!named)
-				{
-					UIElement::draw_sprites(inter);
+			nameboard.draw(Point<int16_t>(489, 106));
 
-					nameboard.draw(Point<int16_t>(489, 106));
-
-					namechar.draw(position);
-					newchar.draw(Point<int16_t>(394, 339), inter);
-
-					UIElement::draw_buttons(inter);
-				} else
-				{
-					UIElement::draw_sprites(inter);
-
-					nameboard.draw(Point<int16_t>(489, 106));
-
-					UIElement::draw_buttons(inter);
-
-					for (auto &sprite : sprites_keytype)
-						sprite.draw(position, inter);
-				}
-			}
+			UIElement::draw_buttons(inter);
 		}
 
 		version.draw(position + Point<int16_t>(707, 1));
@@ -259,34 +233,17 @@ namespace ms
 
 	void UIAranCreation::update()
 	{
-		if (!gender)
+		if (!charSet)
 		{
-			for (auto &sprite : sprites_gender_select)
+			for (auto &sprite : sprites_lookboard)
 				sprite.update();
 
 			newchar.update(Constants::TIMESTEP);
-		} else
+		}
+		else if (!named)
 		{
-			if (!charSet)
-			{
-				for (auto &sprite : sprites_lookboard)
-					sprite.update();
-
-				newchar.update(Constants::TIMESTEP);
-			} else
-			{
-				if (!named)
-				{
-					namechar.update(position);
-					newchar.update(Constants::TIMESTEP);
-				} else
-				{
-					for (auto &sprite : sprites_keytype)
-						sprite.update();
-
-					namechar.set_state(Textfield::State::DISABLED);
-				}
-			}
+			namechar.update(position);
+			newchar.update(Constants::TIMESTEP);
 		}
 
 		UIElement::update();
@@ -385,95 +342,83 @@ namespace ms
 		switch (buttonid)
 		{
 			case Buttons::BT_CHARC_OK:
-				if (!gender)
+				if (!charSet)
 				{
-					gender = true;
+					// v83: Transition from customize to name entry
+					charSet = true;
 
-					buttons[Buttons::BT_CHARC_GENDER_M]->set_active(false);
-					buttons[Buttons::BT_CHARC_GEMDER_F]->set_active(false);
+					buttons[Buttons::BT_CHARC_SKINL]->set_active(false);
+					buttons[Buttons::BT_CHARC_SKINR]->set_active(false);
 
-					buttons[Buttons::BT_CHARC_SKINL]->set_active(true);
-					buttons[Buttons::BT_CHARC_SKINR]->set_active(true);
+					buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(523, 243));
+					buttons[Buttons::BT_CHARC_CANCEL]->set_position(Point<int16_t>(597, 243));
 
-					buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(533, 368));
-					buttons[Buttons::BT_CHARC_CANCEL]->set_position(Point<int16_t>(607, 368));
+					namechar.set_state(Textfield::State::FOCUSED);
 
 					return Button::State::NORMAL;
-				} else
+				}
+				else
 				{
-					if (!charSet)
+					if (!named)
 					{
-						charSet = true;
+						std::string name = namechar.get_text();
 
-						buttons[Buttons::BT_CHARC_SKINL]->set_active(false);
-						buttons[Buttons::BT_CHARC_SKINR]->set_active(false);
-
-						buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(523, 243));
-						buttons[Buttons::BT_CHARC_CANCEL]->set_position(Point<int16_t>(597, 243));
-
-						namechar.set_state(Textfield::State::FOCUSED);
-
-						return Button::State::NORMAL;
-					} else
-					{
-						if (!named)
-						{
-							std::string name = namechar.get_text();
-
-							if (name.size() <= 0)
-							{
-								return Button::State::NORMAL;
-							} else if (name.size() >= 4)
-							{
-								namechar.set_state(Textfield::State::DISABLED);
-
-								buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::DISABLED);
-								buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::DISABLED);
-
-								if (auto raceselect = UI::get().get_element<UIRaceSelect>())
-								{
-									if (raceselect->check_name(name))
-									{
-										NameCharPacket(name).dispatch();
-
-										return Button::State::IDENTITY;
-									}
-								}
-
-								std::function<void()> okhandler = [&]()
-								{
-									namechar.set_state(Textfield::State::FOCUSED);
-
-									buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::NORMAL);
-									buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::NORMAL);
-								};
-
-								UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ILLEGAL_NAME, okhandler);
-
-								return Button::State::NORMAL;
-							} else
-							{
-								namechar.set_state(Textfield::State::DISABLED);
-
-								buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::DISABLED);
-								buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::DISABLED);
-
-								std::function<void()> okhandler = [&]()
-								{
-									namechar.set_state(Textfield::State::FOCUSED);
-
-									buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::NORMAL);
-									buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::NORMAL);
-								};
-
-								UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ILLEGAL_NAME, okhandler);
-
-								return Button::State::IDENTITY;
-							}
-						} else
+						if (name.size() <= 0)
 						{
 							return Button::State::NORMAL;
 						}
+						else if (name.size() >= 4)
+						{
+							namechar.set_state(Textfield::State::DISABLED);
+
+							buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::DISABLED);
+							buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::DISABLED);
+
+							if (auto raceselect = UI::get().get_element<UIRaceSelect>())
+							{
+								if (raceselect->check_name(name))
+								{
+									NameCharPacket(name).dispatch();
+
+									return Button::State::IDENTITY;
+								}
+							}
+
+							std::function<void()> okhandler = [&]()
+							{
+								namechar.set_state(Textfield::State::FOCUSED);
+
+								buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::NORMAL);
+								buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::NORMAL);
+							};
+
+							UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ILLEGAL_NAME, okhandler);
+
+							return Button::State::NORMAL;
+						}
+						else
+						{
+							namechar.set_state(Textfield::State::DISABLED);
+
+							buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::DISABLED);
+							buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::DISABLED);
+
+							std::function<void()> okhandler = [&]()
+							{
+								namechar.set_state(Textfield::State::FOCUSED);
+
+								buttons[Buttons::BT_CHARC_OK]->set_state(Button::State::NORMAL);
+								buttons[Buttons::BT_CHARC_CANCEL]->set_state(Button::State::NORMAL);
+							};
+
+							UI::get().emplace<UILoginNotice>(UILoginNotice::Message::ILLEGAL_NAME, okhandler);
+
+							return Button::State::IDENTITY;
+						}
+					}
+					else
+					{
+						return Button::State::NORMAL;
 					}
 				}
 			case BT_BACK:
@@ -486,6 +431,7 @@ namespace ms
 			case Buttons::BT_CHARC_CANCEL:
 				if (charSet)
 				{
+					// v83: Go back from name entry to customize
 					charSet = false;
 
 					buttons[Buttons::BT_CHARC_SKINL]->set_active(true);
@@ -497,28 +443,12 @@ namespace ms
 					namechar.set_state(Textfield::State::DISABLED);
 
 					return Button::State::NORMAL;
-				} else
+				}
+				else
 				{
-					if (gender)
-					{
-						gender = false;
+					button_pressed(Buttons::BT_BACK);
 
-						buttons[Buttons::BT_CHARC_GENDER_M]->set_active(true);
-						buttons[Buttons::BT_CHARC_GEMDER_F]->set_active(true);
-
-						buttons[Buttons::BT_CHARC_SKINL]->set_active(false);
-						buttons[Buttons::BT_CHARC_SKINR]->set_active(false);
-
-						buttons[Buttons::BT_CHARC_OK]->set_position(Point<int16_t>(520, 397));
-						buttons[Buttons::BT_CHARC_CANCEL]->set_position(Point<int16_t>(594, 397));
-
-						return Button::State::NORMAL;
-					} else
-					{
-						button_pressed(Buttons::BT_BACK);
-
-						return Button::State::NORMAL;
-					}
+					return Button::State::NORMAL;
 				}
 			case Buttons::BT_CHARC_SKINL:
 				skin = (skin > 0) ? skin - 1 : skins[female].size() - 1;
@@ -530,22 +460,6 @@ namespace ms
 				skin = (skin < skins[female].size() - 1) ? skin + 1 : 0;
 				newchar.set_body(skins[female][skin]);
 				bodyname.change_text(newchar.get_body()->get_name());
-
-				return Button::State::NORMAL;
-			case Buttons::BT_CHARC_GENDER_M:
-				if (female)
-				{
-					female = false;
-					randomize_look();
-				}
-
-				return Button::State::NORMAL;
-			case Buttons::BT_CHARC_GEMDER_F:
-				if (!female)
-				{
-					female = true;
-					randomize_look();
-				}
 
 				return Button::State::NORMAL;
 		}

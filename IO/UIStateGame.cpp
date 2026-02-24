@@ -182,6 +182,7 @@ namespace ms
 				case KeyType::Id::MENU:
 					if (pressed)
 					{
+						try {
 						switch (action)
 						{
 							case KeyAction::Id::EQUIPMENT:
@@ -279,19 +280,11 @@ namespace ms
 
 								break;
 							case KeyAction::Id::KEYBINDINGS:
-							{
-								auto keyconfig = UI::get().get_element<UIKeyConfig>();
-
-								if (!keyconfig || !keyconfig->is_active())
-									emplace<UIKeyConfig>(
-											Stage::get().get_player().get_inventory(),
-											Stage::get().get_player().get_skills()
-									);
-								else if (keyconfig && keyconfig->is_active())
-									keyconfig->close();
-
+								emplace<UIKeyConfig>(
+										Stage::get().get_player().get_inventory(),
+										Stage::get().get_player().get_skills()
+								);
 								break;
-							}
 							case KeyAction::Id::MAINMENU:
 								if (auto statusbar = UI::get().get_element<UIStatusBar>())
 									statusbar->send_key(action, pressed, escape);
@@ -306,6 +299,11 @@ namespace ms
 							default:
 								std::cout << "Action (" << action << ") not handled!" << std::endl;
 								break;
+						}
+						} catch (const std::exception& e) {
+							std::cout << "UI open failed (v83 compat): " << e.what() << std::endl;
+						} catch (...) {
+							std::cout << "UI open failed (v83 compat): unknown error" << std::endl;
 						}
 					}
 					break;

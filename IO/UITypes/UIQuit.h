@@ -27,6 +27,8 @@
 
 namespace ms
 {
+	// v83: Rewritten to use UIWindow.img/GameMenu (simple menu with quit/channel/options buttons)
+	// v167+ used UIWindow6.img/askReward with play time/level/exp tracking
 	class UIQuit : public UIElement
 	{
 	public:
@@ -52,62 +54,17 @@ namespace ms
 	private:
 		const CharStats &stats;
 
-		std::string pad_time(int64_t time);
-
-		float getexppercent(uint16_t level, int64_t exp) const;
 		void close();
 
 		enum Buttons : uint16_t
 		{
-			NO,
-			YES
+			BT_QUIT,
+			BT_CHANNEL,
+			BT_GAMEOPT,
+			BT_SYSOPT,
+			BT_SKIN
 		};
 
-		Point<int16_t> screen_adj;
 		ColorBox background;
-
-		/// Time
-		int64_t minutes;
-		int64_t hours;
-
-		Charset time_minutes;
-		Point<int16_t> time_minutes_pos;
-		std::string time_minutes_text;
-
-		Charset time_hours;
-		Point<int16_t> time_hours_pos;
-		std::string time_hours_text;
-
-		int64_t time_number_width;
-
-		Point<int16_t> time_lt;
-		Point<int16_t> time_rb;
-
-		/// Level
-		Sprite levelupEffect;
-
-		uint16_t uplevel;
-
-		Charset levelBefore;
-		Point<int16_t> levelBeforePos;
-		std::string levelBeforeText;
-
-		uint16_t cur_level;
-
-		Charset levelAfter;
-		Point<int16_t> levelAfterPos;
-		std::string levelAfterText;
-
-		int64_t levelNumberWidth;
-		Point<int16_t> level_adj;
-
-		/// Experience
-		Text expBefore;
-		Point<int16_t> expBeforePos;
-
-		Text expAfter;
-		Point<int16_t> expAfterPos;
-
-		Point<int16_t> exp_adj;
 	};
 }

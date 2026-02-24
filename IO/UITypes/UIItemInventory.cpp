@@ -38,16 +38,17 @@ namespace ms
 			: UIDragElement<PosINV>(), inventory(invent), ignore_tooltip(false), tab(InventoryType::Id::EQUIP),
 			  sort_enabled(false)
 	{
-		nl::node Item = nl::nx::ui["UIWindow2.img"]["Item"];
+		nl::node Item = nl::nx::ui["UIWindow.img"]["Item"]; // v83: was UIWindow2.img
 
-		// TODO: Change these to production
+		// v83: only backgrnd exists (no productionBackgrnd2, no backgrnd3)
 		backgrnd = Item["backgrnd"];
-		backgrnd2 = Item["productionBackgrnd2"];
-		backgrnd3 = Item["backgrnd3"];
+		backgrnd2 = Item["backgrnd"]; // v83: reuse backgrnd (no separate backgrnd2)
+		backgrnd3 = Item["backgrnd"]; // v83: reuse backgrnd (no separate backgrnd3)
 
+		// v83: only FullBackgrnd exists (no FullBackgrnd2/3)
 		full_backgrnd = Item["FullBackgrnd"];
-		full_backgrnd2 = Item["FullBackgrnd2"];
-		full_backgrnd3 = Item["FullBackgrnd3"];
+		full_backgrnd2 = Item["FullBackgrnd"]; // v83: reuse (no FullBackgrnd2)
+		full_backgrnd3 = Item["FullBackgrnd"]; // v83: reuse (no FullBackgrnd3)
 
 		bg_dimensions = backgrnd.get_dimensions();
 		bg_full_dimensions = full_backgrnd.get_dimensions();
@@ -72,31 +73,33 @@ namespace ms
 		buttons[Buttons::BT_TAB_SETUP] = std::make_unique<TwoSpriteButton>(tabdis["3"], taben["3"]);
 		buttons[Buttons::BT_TAB_CASH] = std::make_unique<TwoSpriteButton>(tabdis["4"], taben["4"]);
 
-		buttons[Buttons::BT_COIN] = std::make_unique<MapleButton>(Item["BtCoin3"]);
-		buttons[Buttons::BT_POINT] = std::make_unique<MapleButton>(Item["BtPoint0"]);
-		buttons[Buttons::BT_GATHER] = std::make_unique<MapleButton>(Item["BtGather3"]);
-		buttons[Buttons::BT_SORT] = std::make_unique<MapleButton>(Item["BtSort3"]);
-		buttons[Buttons::BT_FULL] = std::make_unique<MapleButton>(Item["BtFull3"]);
-		buttons[Buttons::BT_SMALL] = std::make_unique<MapleButton>(Item["BtSmall3"]);
-		buttons[Buttons::BT_POT] = std::make_unique<MapleButton>(Item["BtPot3"]);
-		buttons[Buttons::BT_UPGRADE] = std::make_unique<MapleButton>(Item["BtUpgrade3"]);
-		buttons[Buttons::BT_APPRAISE] = std::make_unique<MapleButton>(Item["BtAppraise3"]);
-		buttons[Buttons::BT_EXTRACT] = std::make_unique<MapleButton>(Item["BtExtract3"]);
-		buttons[Buttons::BT_DISASSEMBLE] = std::make_unique<MapleButton>(Item["BtDisassemble3"]);
-		buttons[Buttons::BT_TOAD] = std::make_unique<MapleButton>(Item["BtToad3"]);
+		// v83: buttons are NOT numbered (BtCoin, not BtCoin3)
+		buttons[Buttons::BT_COIN] = std::make_unique<MapleButton>(Item["BtCoin"]);
+		buttons[Buttons::BT_POINT] = std::make_unique<MapleButton>(Item["BtPoint0"]); // v83: may not exist
+		buttons[Buttons::BT_GATHER] = std::make_unique<MapleButton>(Item["BtGather"]);
+		buttons[Buttons::BT_SORT] = std::make_unique<MapleButton>(Item["BtSort"]);
+		buttons[Buttons::BT_FULL] = std::make_unique<MapleButton>(Item["BtFull"]);
+		buttons[Buttons::BT_SMALL] = std::make_unique<MapleButton>(Item["BtSmall"]);
+		buttons[Buttons::BT_POT] = std::make_unique<MapleButton>(Item["BtPot"]); // v83: may not exist
+		buttons[Buttons::BT_UPGRADE] = std::make_unique<MapleButton>(Item["BtUpgrade"]); // v83: may not exist
+		buttons[Buttons::BT_APPRAISE] = std::make_unique<MapleButton>(Item["BtAppraise"]); // v83: may not exist
+		buttons[Buttons::BT_EXTRACT] = std::make_unique<MapleButton>(Item["BtExtract"]); // v83: may not exist
+		buttons[Buttons::BT_DISASSEMBLE] = std::make_unique<MapleButton>(Item["BtDisassemble"]); // v83: may not exist
+		buttons[Buttons::BT_TOAD] = std::make_unique<MapleButton>(Item["BtToad"]); // v83: may not exist
 
-		buttons[Buttons::BT_COIN_SM] = std::make_unique<MapleButton>(Item["BtCoin4"]);
-		buttons[Buttons::BT_POINT_SM] = std::make_unique<MapleButton>(Item["BtPoint1"]);
-		buttons[Buttons::BT_GATHER_SM] = std::make_unique<MapleButton>(Item["BtGather4"]);
-		buttons[Buttons::BT_SORT_SM] = std::make_unique<MapleButton>(Item["BtSort4"]);
-		buttons[Buttons::BT_FULL_SM] = std::make_unique<MapleButton>(Item["BtFull4"]);
-		buttons[Buttons::BT_SMALL_SM] = std::make_unique<MapleButton>(Item["BtSmall4"]);
-		buttons[Buttons::BT_POT_SM] = std::make_unique<MapleButton>(Item["BtPot4"]);
-		buttons[Buttons::BT_UPGRADE_SM] = std::make_unique<MapleButton>(Item["BtUpgrade4"]);
-		buttons[Buttons::BT_APPRAISE_SM] = std::make_unique<MapleButton>(Item["BtAppraise4"]);
-		buttons[Buttons::BT_EXTRACT_SM] = std::make_unique<MapleButton>(Item["BtExtract4"]);
-		buttons[Buttons::BT_DISASSEMBLE_SM] = std::make_unique<MapleButton>(Item["BtDisassemble4"]);
-		buttons[Buttons::BT_TOAD_SM] = std::make_unique<MapleButton>(Item["BtToad4"]);
+		// v83: no small-mode (*4) button variants — reuse normal buttons (null = invisible, safe)
+		buttons[Buttons::BT_COIN_SM] = std::make_unique<MapleButton>(Item["BtCoin"]);
+		buttons[Buttons::BT_POINT_SM] = std::make_unique<MapleButton>(Item["BtPoint0"]);
+		buttons[Buttons::BT_GATHER_SM] = std::make_unique<MapleButton>(Item["BtGather"]);
+		buttons[Buttons::BT_SORT_SM] = std::make_unique<MapleButton>(Item["BtSort"]);
+		buttons[Buttons::BT_FULL_SM] = std::make_unique<MapleButton>(Item["BtFull"]);
+		buttons[Buttons::BT_SMALL_SM] = std::make_unique<MapleButton>(Item["BtSmall"]);
+		buttons[Buttons::BT_POT_SM] = std::make_unique<MapleButton>(Item["BtPot"]);
+		buttons[Buttons::BT_UPGRADE_SM] = std::make_unique<MapleButton>(Item["BtUpgrade"]);
+		buttons[Buttons::BT_APPRAISE_SM] = std::make_unique<MapleButton>(Item["BtAppraise"]);
+		buttons[Buttons::BT_EXTRACT_SM] = std::make_unique<MapleButton>(Item["BtExtract"]);
+		buttons[Buttons::BT_DISASSEMBLE_SM] = std::make_unique<MapleButton>(Item["BtDisassemble"]);
+		buttons[Buttons::BT_TOAD_SM] = std::make_unique<MapleButton>(Item["BtToad"]);
 		buttons[Buttons::BT_CASHSHOP] = std::make_unique<MapleButton>(Item["BtCashshop"]);
 
 		buttons[Buttons::BT_POT]->set_state(Button::State::DISABLED);

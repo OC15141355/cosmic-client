@@ -26,9 +26,21 @@
 #include "Gameplay/Combat/DamageNumber.h"
 
 #include <iostream>
+#include <csignal>
+#include <execinfo.h>
 
 #include "Timer.h"
 #include <string>
+
+// v83: crash handler for debugging segfaults
+static void crash_handler(int sig)
+{
+	void *frames[64];
+	int count = backtrace(frames, 64);
+	std::cerr << "\n=== CRASH (signal " << sig << ") ===" << std::endl;
+	backtrace_symbols_fd(frames, count, 2);
+	std::exit(1);
+}
 
 namespace ms
 {
@@ -161,6 +173,8 @@ namespace ms
 
 int main()
 {
+	std::signal(SIGSEGV, crash_handler);
+	std::signal(SIGABRT, crash_handler);
 	ms::HardwareInfo();
 	ms::ScreenResolution();
 	ms::start();

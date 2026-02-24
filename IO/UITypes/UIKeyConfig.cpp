@@ -37,7 +37,8 @@ namespace ms
 		keyboard = &UI::get().get_keyboard();
 		staged_mappings = keyboard->get_maplekeys();
 
-		nl::node KeyConfig = nl::nx::ui["StatusBar3.img"]["KeyConfig"];
+		// v83: KeyConfig is in UIWindow.img, not StatusBar3.img
+		nl::node KeyConfig = nl::nx::ui["UIWindow.img"]["KeyConfig"];
 
 		icon = KeyConfig["icon"];
 		key = KeyConfig["key"];
@@ -47,16 +48,15 @@ namespace ms
 		Point<int16_t> bg_dimensions = bg.get_dimensions();
 
 		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(KeyConfig["backgrnd2"]);
-		sprites.emplace_back(KeyConfig["backgrnd3"]);
+		// v83: no backgrnd2/backgrnd3, empty sprites are safe
 
-		nl::node BtClose3 = nl::nx::ui["Basic.img"]["BtClose3"];
-		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(BtClose3, Point<int16_t>(bg_dimensions.x() - 18, 3));
-		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(KeyConfig["button:Cancel"]);
-		buttons[Buttons::DEFAULT] = std::make_unique<MapleButton>(KeyConfig["button:Default"]);
-		buttons[Buttons::DELETE] = std::make_unique<MapleButton>(KeyConfig["button:Delete"]);
-		buttons[Buttons::KEYSETTING] = std::make_unique<MapleButton>(KeyConfig["button:keySetting"]);
-		buttons[Buttons::OK] = std::make_unique<MapleButton>(KeyConfig["button:OK"]);
+		// v83: button names use BtX format, not button:X
+		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(KeyConfig["BtClose"], Point<int16_t>(bg_dimensions.x() - 18, 3));
+		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(KeyConfig["BtCancel"]);
+		buttons[Buttons::DEFAULT] = std::make_unique<MapleButton>(KeyConfig["BtDefault"]);
+		buttons[Buttons::DELETE] = std::make_unique<MapleButton>(KeyConfig["BtDelete"]);
+		buttons[Buttons::KEYSETTING] = std::make_unique<MapleButton>(KeyConfig["BtQuickSlot"]);
+		buttons[Buttons::OK] = std::make_unique<MapleButton>(KeyConfig["BtOK"]);
 
 		dimension = bg_dimensions;
 		dragarea = Point<int16_t>(bg_dimensions.x(), 20);

@@ -20,12 +20,13 @@
 
 #include "../UIElement.h"
 
-#include "../Components/Textfield.h"
-#include "../Template/BoolPair.h"
+#include "../../Graphics/Animation.h"
+#include "../../Graphics/Text.h"
 
 namespace ms
 {
-	// Race selection screen.
+	// v83: Race selection screen — 3 races: Explorer, Aran, Cygnus Knight
+	// (v167+ had a 26-class carousel via RaceSelect_new; v83 uses simple RaceSelect)
 	class UIRaceSelect : public UIElement
 	{
 	public:
@@ -53,88 +54,36 @@ namespace ms
 		Button::State button_pressed(uint16_t buttonid) override;
 
 	private:
-		void select_class(uint8_t index);
-
 		void show_charselect();
-
-		Point<int16_t> get_class_pos(size_t index) const;
 
 		std::string to_lower(std::string value) const;
 
-		static constexpr uint8_t INDEX_COUNT = 5;
-		static constexpr uint8_t CLASS_COUNT = 26;
+		// v83: 3 races only
+		static constexpr uint8_t RACE_COUNT = 3;
 
 		enum Buttons : uint16_t
 		{
 			BACK,
-			MAKE,
-			LEFT,
-			RIGHT,
-			CLASS0,
-			CLASS1,
-			CLASS2,
-			CLASS3,
-			CLASS4
+			BT_NORMAL,
+			BT_ARAN,
+			BT_KNIGHT,
+			BT_SELECT
 		};
 
-		// TODO: Merge with UILoginNotice.h
-		enum Classes : uint8_t
+		enum Race : uint8_t
 		{
-			RESISTANCE,
-			EXPLORER,
-			CYGNUSKNIGHTS,
-			ARAN,
-			EVAN,
-			MERCEDES,
-			DEMON,
-			PHANTOM,
-			DUALBLADE,
-			MIHILE,
-			LUMINOUS,
-			KAISER,
-			ANGELICBUSTER,
-			CANNONEER,
-			XENON,
-			ZERO,
-			SHADE,
-			JETT,
-			HAYATO,
-			KANNA,
-			CHASE,
-			PINKBEAN,
-			KINESIS,
-			CADENA,
-			ILLIUM,
-			ARK,
+			EXPLORER = 0,
+			ARAN = 1,
+			KNIGHT = 2
 		};
 
 		Text version;
-		Point<int16_t> pos;
-		Point<int16_t> posZero;
-		nl::node order;
-		nl::node hotlist;
-		nl::node newlist;
-		nl::node bgm;
-		Sprite hotlabel;
-		Sprite hotlabelZero;
-		Sprite newlabel;
-		Sprite hotbtn;
-		Sprite newbtn;
-		uint8_t class_index[INDEX_COUNT];
-		bool mouseover[INDEX_COUNT];
-		uint8_t selected_class;
-		uint8_t index_shift;
-		uint16_t selected_index;
-		bool class_isdisabled[CLASS_COUNT];
-		BoolPair<Texture> class_disabled[CLASS_COUNT];
-		BoolPair<Texture> class_normal[CLASS_COUNT];
-		Texture class_background[CLASS_COUNT];
-		Texture class_details[CLASS_COUNT];
-		Texture class_title[CLASS_COUNT];
-		Texture back;
-		Texture backZero;
-		Sprite back_ani;
-		Texture class_details_background;
-		Texture class_details_backgroundZero;
+
+		// v83: Each race has off/on animations and descriptive text
+		Animation off_anims[RACE_COUNT];
+		Animation on_anims[RACE_COUNT];
+		Sprite race_texts[RACE_COUNT];
+
+		uint8_t selected_race;
 	};
 }

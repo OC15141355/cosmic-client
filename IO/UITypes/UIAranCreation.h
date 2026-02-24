@@ -28,6 +28,8 @@
 
 namespace ms
 {
+	// v83: Aran character creation — uses Login.img/NewCharAran
+	// (v167+ used Login.img/CustomizeChar/2000 which doesn't exist in v83)
 	class UIAranCreation : public UIElement
 	{
 	public:
@@ -57,29 +59,17 @@ namespace ms
 
 		const std::string &get_equipname(EquipSlot::Id slot) const;
 
+		// v83: No gender buttons — only skin L/R customization for Aran
 		enum Buttons : uint16_t
 		{
 			BT_BACK,
 			BT_CHARC_OK,
 			BT_CHARC_CANCEL,
 			BT_CHARC_SKINL,
-			BT_CHARC_SKINR,
-			BT_CHARC_GENDER_M,
-			BT_CHARC_GEMDER_F
-		};
-
-		enum GenderButtons : uint8_t
-		{
-			GENDER_BACKGROUND,
-			GENDER_HEAD,
-			GENDER_TOP,
-			GENDER_MID,
-			GENDER_BOTTOM
+			BT_CHARC_SKINR
 		};
 
 		std::vector<Sprite> sprites_lookboard;
-		std::vector<Sprite> sprites_gender_select;
-		std::vector<Sprite> sprites_keytype;
 		Texture sky;
 		Texture cloud;
 		float cloudfx;
@@ -97,7 +87,7 @@ namespace ms
 		BoolPair<std::vector<int32_t>> shoes;
 		BoolPair<std::vector<int32_t>> weapons;
 
-		bool gender;
+		// v83: No gender select stage — 2-stage flow (customize → name)
 		bool charSet;
 		bool named;
 		bool female;

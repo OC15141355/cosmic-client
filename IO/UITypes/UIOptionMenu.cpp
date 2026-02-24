@@ -29,6 +29,8 @@ namespace ms
 {
 	UIOptionMenu::UIOptionMenu() : UIDragElement<PosOPTIONMENU>(), selected_tab(0)
 	{
+		// v83: StatusBar3.img/OptionMenu doesn't exist in v83
+		// Use a minimal fallback — the OptionMenu will be mostly invisible but won't crash
 		nl::node OptionMenu = nl::nx::ui["StatusBar3.img"]["OptionMenu"];
 		nl::node backgrnd = OptionMenu["backgrnd"];
 
@@ -54,9 +56,15 @@ namespace ms
 		for (size_t i = Buttons::TAB0; i < Buttons::CANCEL; i++)
 			buttons[i] = std::make_unique<TwoSpriteButton>(tab_disabled[i], tab_enabled[i]);
 
+		// v83: combo:resolution node doesn't exist — use defaults to avoid crash
 		std::string sButtonUOL = graphic["combo:resolution"]["sButtonUOL"].get_string();
-		std::string ctype = std::string(1, sButtonUOL.back());
-		MapleComboBox::Type type = static_cast<MapleComboBox::Type>(std::stoi(ctype));
+		MapleComboBox::Type type = MapleComboBox::Type::DEFAULT;
+
+		if (!sButtonUOL.empty())
+		{
+			std::string ctype = std::string(1, sButtonUOL.back());
+			type = static_cast<MapleComboBox::Type>(std::stoi(ctype));
+		}
 
 		std::vector<std::string> resolutions =
 				{
@@ -106,12 +114,18 @@ namespace ms
 		}
 
 		int64_t combobox_width = graphic["combo:resolution"]["boxWidth"].get_integer();
+		if (combobox_width <= 0) combobox_width = 150; // v83: fallback width
+
 		Point<int16_t> lt = Point<int16_t>(graphic["combo:resolution"]["lt"]);
 
 		buttons[Buttons::SELECT_RES] = std::make_unique<MapleComboBox>(type, resolutions, default_option, position, lt,
 																	   combobox_width);
 
 		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();
+
+		// v83: if no backgrnd texture, use a reasonable default size
+		if (bg_dimensions.x() <= 0 || bg_dimensions.y() <= 0)
+			bg_dimensions = Point<int16_t>(300, 300);
 
 		dimension = bg_dimensions;
 		dragarea = Point<int16_t>(bg_dimensions.x(), 20);

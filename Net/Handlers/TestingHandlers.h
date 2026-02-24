@@ -32,4 +32,60 @@ namespace ms
 	{
 		void handle(InPacket& recv) const override;
 	};
+
+	// v83: Buddy list operations (add, remove, update online status)
+	// Opcode: BUDDYLIST(63)
+	class BuddyListHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Family system info
+	// Opcode: FAMILY_INFO_RESULT(95)
+	class FamilyInfoHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Family privilege list
+	// Opcode: FAMILY_PRIVILEGE_LIST(100)
+	class FamilyPrivilegeHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Claim/reward status update
+	// Opcode: CLAIM_STATUS_CHANGED(47)
+	class ClaimStatusHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Set account gender
+	// Opcode: SET_GENDER(58)
+	class SetGenderHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Mark NPCs as scriptable/interactable
+	// Opcode: SET_NPC_SCRIPTABLE(263)
+	class SetNpcScriptableHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Cash shop operation result
+	// Opcode: CS_OPERATION(324)
+	class CashShopOperationHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
+
+	// v83: Cash shop update (inventory/balance change)
+	// Opcode: CS_UPDATE(325)
+	class CashShopUpdateHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
 }

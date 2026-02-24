@@ -33,8 +33,9 @@ namespace ms
 
 		if (type == Type::CHATBAR)
 		{
-			src = nl::nx::ui["StatusBar3.img"]["chat"]["common"]["scroll"];
-			base_str += "_c";
+			// v83: StatusBar3.img/chat/common/scroll doesn't exist
+			// Fall through to use Basic.img/VScr as default scrollbar
+			src = nl::nx::ui["Basic.img"]["VScr"];
 		} else
 		{
 			std::string VScr = "VScr";

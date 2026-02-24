@@ -36,11 +36,15 @@ namespace ms
 		rowpos = 0;
 		rowmax = -1;
 
+		// v83: StatusBar3.img/chat doesn't exist in v83
+		// Use Basic.img chat nodes if available, otherwise nodes will be null (safe — empty textures)
 		nl::node chat = nl::nx::ui["StatusBar3.img"]["chat"];
 		nl::node ingame = chat["ingame"];
 		nl::node view = ingame["view"];
 		nl::node input = ingame["input"];
 		nl::node chatTarget = chat["common"]["chatTarget"];
+		// Note: All nodes above will be null in v83. MapleButton/Sprite/Texture handle null nodes
+		// gracefully (invisible elements). Chat text input still works via the Textfield.
 
 		chatspace[0] = view["min"]["top"];
 		chatspace[1] = view["min"]["center"];

@@ -46,6 +46,9 @@
 
 namespace ms
 {
+	// v83: Rewritten to use StatusBar.img instead of StatusBar3.img/mainBar
+	// v83 StatusBar is the classic bottom bar with HP/MP gauges and shortcut buttons
+	// v167+ had resolution-dependent layouts and expandable submenus — v83 is 800x600 fixed
 	UIStatusBar::UIStatusBar(const CharStats &st) : stats(st)
 	{
 		quickslot_active = false;
@@ -59,218 +62,67 @@ namespace ms
 		character_active = false;
 		event_active = false;
 
-		std::string stat = "status";
+		// v83: StatusBar.img has base/, gauge/, number/, and individual buttons
+		nl::node StatusBar = nl::nx::ui["StatusBar.img"];
+		nl::node base = StatusBar["base"];
+		nl::node gauge = StatusBar["gauge"];
+		nl::node number = StatusBar["number"];
 
-		if (VWIDTH == 800)
-			stat += "800";
+		// v83: Main background — single bitmap covering the whole bar
+		sprites.emplace_back(base["backgrnd"]);
+		sprites.emplace_back(base["backgrnd2"]);
 
-		nl::node mainBar = nl::nx::ui["StatusBar3.img"]["mainBar"];
-		nl::node status = mainBar[stat];
-		nl::node EXPBar = mainBar["EXPBar"];
-		nl::node EXPBarRes = EXPBar[VWIDTH];
-		nl::node menu = mainBar["menu"];
-		nl::node quickSlot = mainBar["quickSlot"];
-		nl::node submenu = mainBar["submenu"];
-
+		// v83: EXP bar uses the gauge bar texture (thin bar at bottom)
 		exp_pos = Point<int16_t>(0, 87);
-
-		sprites.emplace_back(EXPBar["backgrnd"], DrawArgument(Point<int16_t>(0, 87), Point<int16_t>(VWIDTH, 0)));
-		sprites.emplace_back(EXPBarRes["layer:back"], exp_pos);
-
 		int16_t exp_max = VWIDTH - 16;
+		expbar = Gauge(Gauge::Type::GAME, gauge["bar"], exp_max, 0.0f);
 
-		expbar = Gauge(
-				Gauge::Type::GAME,
-				EXPBarRes.resolve("layer:gauge"),
-				EXPBarRes.resolve("layer:cover"),
-				EXPBar.resolve("layer:effect"),
-				exp_max, 0.0f
-		);
+		quickslot_min = 0;
 
-		int16_t pos_adj = 0;
+		// v83: Fixed positions for 800x600 layout
+		hpmp_pos = Point<int16_t>(174, 24);
+		hpset_pos = Point<int16_t>(260, 30);
+		mpset_pos = Point<int16_t>(260, 48);
+		statset_pos = Point<int16_t>(427, 111);
+		levelset_pos = Point<int16_t>(32, 30);
+		namelabel_pos = Point<int16_t>(32, 48);
+		quickslot_pos = Point<int16_t>(579, 0);
+		quickslot_qs_adj = Point<int16_t>(211, 0);
 
-		if (VWIDTH == 1280)
-			pos_adj = 87;
-		else if (VWIDTH == 1366)
-			pos_adj = 171;
-		else if (VWIDTH == 1920)
-			pos_adj = 448;
+		// v83: Submenu positions (kept for compatibility, submenus will be invisible)
+		menu_pos = Point<int16_t>(682, -280);
+		setting_pos = menu_pos + Point<int16_t>(0, 168);
+		community_pos = menu_pos + Point<int16_t>(-26, 196);
+		character_pos = menu_pos + Point<int16_t>(-61, 168);
+		event_pos = menu_pos + Point<int16_t>(-94, 252);
 
-		if (VWIDTH == 1024)
-			quickslot_min = 1;
-		else
-			quickslot_min = 0;
-
-		if (VWIDTH == 800)
-		{
-			hpmp_pos = Point<int16_t>(412, 40);
-			hpset_pos = Point<int16_t>(530, 70);
-			mpset_pos = Point<int16_t>(528, 86);
-			statset_pos = Point<int16_t>(427, 111);
-			levelset_pos = Point<int16_t>(461, 48);
-			namelabel_pos = Point<int16_t>(487, 40);
-			quickslot_pos = Point<int16_t>(579, 0);
-
-			// Menu
-			menu_pos = Point<int16_t>(682, -280);
-			setting_pos = menu_pos + Point<int16_t>(0, 168);
-			community_pos = menu_pos + Point<int16_t>(-26, 196);
-			character_pos = menu_pos + Point<int16_t>(-61, 168);
-			event_pos = menu_pos + Point<int16_t>(-94, 252);
-		} else
-		{
-			hpmp_pos = Point<int16_t>(416 + pos_adj, 40);
-			hpset_pos = Point<int16_t>(550 + pos_adj, 70);
-			mpset_pos = Point<int16_t>(546 + pos_adj, 86);
-			statset_pos = Point<int16_t>(539 + pos_adj, 111);
-			levelset_pos = Point<int16_t>(465 + pos_adj, 48);
-			namelabel_pos = Point<int16_t>(493 + pos_adj, 40);
-			quickslot_pos = Point<int16_t>(628 + pos_adj, 37);
-
-			// Menu
-			menu_pos = Point<int16_t>(720 + pos_adj, -280);
-			setting_pos = menu_pos + Point<int16_t>(0, 168);
-			community_pos = menu_pos + Point<int16_t>(-26, 196);
-			character_pos = menu_pos + Point<int16_t>(-61, 168);
-			event_pos = menu_pos + Point<int16_t>(-94, 252);
-		}
-
-		if (VWIDTH == 1280)
-		{
-			statset_pos = Point<int16_t>(580 + pos_adj, 111);
-			quickslot_pos = Point<int16_t>(622 + pos_adj, 37);
-
-			// Menu
-			menu_pos += Point<int16_t>(-7, 0);
-			setting_pos += Point<int16_t>(-7, 0);
-			community_pos += Point<int16_t>(-7, 0);
-			character_pos += Point<int16_t>(-7, 0);
-			event_pos += Point<int16_t>(-7, 0);
-		} else if (VWIDTH == 1366)
-		{
-			quickslot_pos = Point<int16_t>(623 + pos_adj, 37);
-
-			// Menu
-			menu_pos += Point<int16_t>(-5, 0);
-			setting_pos += Point<int16_t>(-5, 0);
-			community_pos += Point<int16_t>(-5, 0);
-			character_pos += Point<int16_t>(-5, 0);
-			event_pos += Point<int16_t>(-5, 0);
-		} else if (VWIDTH == 1920)
-		{
-			quickslot_pos = Point<int16_t>(900 + pos_adj, 37);
-
-			// Menu
-			menu_pos += Point<int16_t>(272, 0);
-			setting_pos += Point<int16_t>(272, 0);
-			community_pos += Point<int16_t>(272, 0);
-			character_pos += Point<int16_t>(272, 0);
-			event_pos += Point<int16_t>(272, 0);
-		}
-
-		hpmp_sprites.emplace_back(status["backgrnd"], hpmp_pos - Point<int16_t>(1, 0));
-		hpmp_sprites.emplace_back(status["layer:cover"], hpmp_pos - Point<int16_t>(1, 0));
-
-		if (VWIDTH == 800)
-			hpmp_sprites.emplace_back(status["layer:Lv"], hpmp_pos);
-		else
-			hpmp_sprites.emplace_back(status["layer:Lv"], hpmp_pos - Point<int16_t>(1, 0));
-
+		// v83: HP/MP gauge area — use gauge textures
 		int16_t hpmp_max = 139;
+		hpbar = Gauge(Gauge::Type::GAME, gauge["bar"], hpmp_max, 0.0f);
+		mpbar = Gauge(Gauge::Type::GAME, gauge["bar"], hpmp_max, 0.0f);
 
-		if (VWIDTH > 800)
-			hpmp_max += 30;
-
-		hpbar = Gauge(Gauge::Type::GAME, status.resolve("gauge/hp/layer:0"), hpmp_max, 0.0f);
-		mpbar = Gauge(Gauge::Type::GAME, status.resolve("gauge/mp/layer:0"), hpmp_max, 0.0f);
-
-		statset = Charset(EXPBar["number"], Charset::Alignment::RIGHT);
-		hpmpset = Charset(status["gauge"]["number"], Charset::Alignment::RIGHT);
-		levelset = Charset(status["lvNumber"], Charset::Alignment::LEFT);
+		// v83: All charsets use number/0-9
+		statset = Charset(number, Charset::Alignment::RIGHT);
+		hpmpset = Charset(number, Charset::Alignment::RIGHT);
+		levelset = Charset(number, Charset::Alignment::LEFT);
 
 		namelabel = OutlinedText(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::GALLERY, Color::Name::TUNA);
 
-		quickslot[0] = quickSlot["backgrnd"];
-		quickslot[1] = quickSlot["layer:cover"];
+		// v83: QuickSlot background from base
+		quickslot[0] = base["quickSlot"];
 
-		Point<int16_t> buttonPos = Point<int16_t>(591 + pos_adj, 73);
+		// v83: Main bar buttons — use v83 MapleButton assets
+		// These replace the v167+ menu["button:X"] buttons
+		buttons[Buttons::BT_CASHSHOP] = std::make_unique<MapleButton>(StatusBar["BtShop"]);
+		buttons[Buttons::BT_MENU] = std::make_unique<MapleButton>(StatusBar["BtMenu"]);
+		buttons[Buttons::BT_OPTIONS] = std::make_unique<MapleButton>(StatusBar["KeySet"]);
+		buttons[Buttons::BT_CHARACTER] = std::make_unique<MapleButton>(StatusBar["StatKey"]);
+		buttons[Buttons::BT_COMMUNITY] = std::make_unique<MapleButton>(StatusBar["BtWhisper"]);
+		buttons[Buttons::BT_EVENT] = std::make_unique<MapleButton>(StatusBar["BtClaim"]);
 
-		if (VWIDTH == 1024)
-			buttonPos += Point<int16_t>(38, 0);
-		else if (VWIDTH == 1280)
-			buttonPos += Point<int16_t>(31, 0);
-		else if (VWIDTH == 1366)
-			buttonPos += Point<int16_t>(33, 0);
-		else if (VWIDTH == 1920)
-			buttonPos += Point<int16_t>(310, 0);
-
-		buttons[Buttons::BT_CASHSHOP] = std::make_unique<MapleButton>(menu["button:CashShop"], buttonPos);
-		buttons[Buttons::BT_MENU] = std::make_unique<MapleButton>(menu["button:Menu"], buttonPos);
-		buttons[Buttons::BT_OPTIONS] = std::make_unique<MapleButton>(menu["button:Setting"], buttonPos);
-		buttons[Buttons::BT_CHARACTER] = std::make_unique<MapleButton>(menu["button:Character"], buttonPos);
-		buttons[Buttons::BT_COMMUNITY] = std::make_unique<MapleButton>(menu["button:Community"], buttonPos);
-		buttons[Buttons::BT_EVENT] = std::make_unique<MapleButton>(menu["button:Event"], buttonPos);
-
-		if (quickslot_active && VWIDTH > 800)
-		{
-			buttons[Buttons::BT_CASHSHOP]->set_active(false);
-			buttons[Buttons::BT_MENU]->set_active(false);
-			buttons[Buttons::BT_OPTIONS]->set_active(false);
-			buttons[Buttons::BT_CHARACTER]->set_active(false);
-			buttons[Buttons::BT_COMMUNITY]->set_active(false);
-			buttons[Buttons::BT_EVENT]->set_active(false);
-		}
-
-		std::string fold = "button:Fold";
-		std::string extend = "button:Extend";
-
-		if (VWIDTH == 800)
-		{
-			fold += "800";
-			extend += "800";
-		}
-
-		if (VWIDTH == 1366)
-			quickslot_qs_adj = Point<int16_t>(213, 0);
-		else
-			quickslot_qs_adj = Point<int16_t>(211, 0);
-
-		if (VWIDTH == 800)
-		{
-			Point<int16_t> quickslot_qs = Point<int16_t>(579, 0);
-
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend],
-																		   quickslot_qs + quickslot_qs_adj);
-		} else if (VWIDTH == 1024)
-		{
-			Point<int16_t> quickslot_qs = Point<int16_t>(627 + pos_adj, 37);
-
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend],
-																		   quickslot_qs + quickslot_qs_adj);
-		} else if (VWIDTH == 1280)
-		{
-			Point<int16_t> quickslot_qs = Point<int16_t>(621 + pos_adj, 37);
-
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend],
-																		   quickslot_qs + quickslot_qs_adj);
-		} else if (VWIDTH == 1366)
-		{
-			Point<int16_t> quickslot_qs = Point<int16_t>(623 + pos_adj, 37);
-
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend],
-																		   quickslot_qs + quickslot_qs_adj);
-		} else if (VWIDTH == 1920)
-		{
-			Point<int16_t> quickslot_qs = Point<int16_t>(900 + pos_adj, 37);
-
-			buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(quickSlot[fold], quickslot_qs);
-			buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(quickSlot[extend],
-																		   quickslot_qs + quickslot_qs_adj);
-		}
+		// v83: QuickSlot fold/extend buttons
+		buttons[Buttons::BT_FOLD_QS] = std::make_unique<MapleButton>(StatusBar["QuickSlot"]);
+		buttons[Buttons::BT_EXTEND_QS] = std::make_unique<MapleButton>(StatusBar["QuickSlotD"]);
 
 		if (quickslot_active)
 			buttons[Buttons::BT_EXTEND_QS]->set_active(false);
@@ -278,6 +130,9 @@ namespace ms
 			buttons[Buttons::BT_FOLD_QS]->set_active(false);
 
 #pragma region Menu
+		// v83: Submenu system doesn't exist — all submenu nodes will be null (invisible buttons, safe)
+		nl::node submenu; // null node — all buttons will be invisible
+
 		menubackground[0] = submenu["backgrnd"]["0"];
 		menubackground[1] = submenu["backgrnd"]["1"];
 		menubackground[2] = submenu["backgrnd"]["2"];
@@ -345,37 +200,11 @@ namespace ms
 		menutitle[4] = submenu["title"]["setting"];
 #pragma endregion
 
-		if (VWIDTH == 800)
-		{
-			position = Point<int16_t>(0, 480);
-			position_x = 410;
-			position_y = position.y();
-			dimension = Point<int16_t>(VWIDTH - position_x, 140);
-		} else if (VWIDTH == 1024)
-		{
-			position = Point<int16_t>(0, 648);
-			position_x = 410;
-			position_y = position.y() + 42;
-			dimension = Point<int16_t>(VWIDTH - position_x, 75);
-		} else if (VWIDTH == 1280)
-		{
-			position = Point<int16_t>(0, 600);
-			position_x = 500;
-			position_y = position.y() + 42;
-			dimension = Point<int16_t>(VWIDTH - position_x, 75);
-		} else if (VWIDTH == 1366)
-		{
-			position = Point<int16_t>(0, 648);
-			position_x = 585;
-			position_y = position.y() + 42;
-			dimension = Point<int16_t>(VWIDTH - position_x, 75);
-		} else if (VWIDTH == 1920)
-		{
-			position = Point<int16_t>(0, 960 + (VHEIGHT - 1080));
-			position_x = 860;
-			position_y = position.y() + 40;
-			dimension = Point<int16_t>(VWIDTH - position_x, 80);
-		}
+		// v83: Fixed 800x600 layout — bar at bottom of screen
+		position = Point<int16_t>(0, VHEIGHT - 72);
+		position_x = 0;
+		position_y = position.y();
+		dimension = Point<int16_t>(VWIDTH, 72);
 	}
 
 	void UIStatusBar::draw(float alpha) const
@@ -385,14 +214,10 @@ namespace ms
 		for (size_t i = 0; i <= Buttons::BT_EVENT; i++)
 			buttons.at(i)->draw(position);
 
-		hpmp_sprites[0].draw(position, alpha);
-
+		// v83: hpmp_sprites not used — gauge area is part of base/backgrnd
 		expbar.draw(position + exp_pos);
 		hpbar.draw(position + hpmp_pos);
 		mpbar.draw(position + hpmp_pos);
-
-		hpmp_sprites[1].draw(position, alpha);
-		hpmp_sprites[2].draw(position, alpha);
 
 		int16_t level = stats.get_stat(MapleStat::Id::LEVEL);
 		int16_t hp = stats.get_stat(MapleStat::Id::HP);
@@ -507,9 +332,7 @@ namespace ms
 	{
 		UIElement::update();
 
-		for (auto sprite : hpmp_sprites)
-			sprite.update();
-
+		// v83: hpmp_sprites not used — gauge area is part of base/backgrnd
 		expbar.update(getexppercent());
 		hpbar.update(gethppercent());
 		mpbar.update(getmppercent());

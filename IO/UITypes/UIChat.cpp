@@ -27,44 +27,10 @@ namespace ms
 {
 	UIChat::UIChat() : UIDragElement<PosMAPLECHAT>()
 	{
-		show_weekly = Configuration::get().get_show_weekly();
-
-		nl::node socialChatEnter = nl::nx::ui["UIWindow2.img"]["socialChatEnter"];
-
-		nl::node backgrnd = socialChatEnter["backgrnd"];
-		nl::node backgrnd4 = socialChatEnter["backgrnd4"];
-		nl::node backgrnd5 = socialChatEnter["backgrnd5"];
-
-		rank_shift = Point<int16_t>(86, 130);
-		name_shift = Point<int16_t>(50, 5);
-
-		origin_left = Texture(backgrnd4).get_origin();
-		origin_right = Texture(backgrnd5).get_origin();
-
-		origin_left = Point<int16_t>(std::abs(origin_left.x()), std::abs(origin_left.y()));
-		origin_right = Point<int16_t>(std::abs(origin_right.x()), std::abs(origin_right.y()));
-
-		sprites.emplace_back(socialChatEnter["ribbon"]);
-		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(socialChatEnter["backgrnd2"]);
-		sprites.emplace_back(socialChatEnter["backgrnd3"]);
-		sprites.emplace_back(backgrnd4);
-		sprites.emplace_back(backgrnd5);
-
-		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(socialChatEnter["btX"]);
-		buttons[Buttons::CHAT_DUO] = std::make_unique<MapleButton>(socialChatEnter["duoChat"]);
-		buttons[Buttons::CHAT_FRIEND] = std::make_unique<MapleButton>(socialChatEnter["groupChatFrd"]);
-		buttons[Buttons::CHAT_RANDOM] = std::make_unique<MapleButton>(socialChatEnter["groupChatRnd"]);
-
-		charset = Charset(socialChatEnter["number"], Charset::Alignment::RIGHT);
-
-		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
-		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
-
-		dimension = Texture(backgrnd).get_dimensions();
-
-		if (show_weekly)
-			UI::get().emplace<UIRank>();
+		// v83: socialChatEnter and socialRank nodes DON'T EXIST in v83 UIWindow.img
+		// Maple Chat is not a v83 feature — UIChatBar handles all chat functionality
+		// Immediately deactivate so the UI does nothing
+		deactivate();
 	}
 
 	void UIChat::draw(float inter) const
@@ -116,39 +82,9 @@ namespace ms
 
 	UIRank::UIRank() : UIDragElement<PosMAPLECHAT>()
 	{
-		Configuration::get().set_show_weekly(false);
-
-		nl::node socialRank = nl::nx::ui["UIWindow2.img"]["socialRank"];
-
-		nl::node backgrnd = socialRank["backgrnd"];
-		nl::node backgrnd4 = socialRank["backgrnd4"];
-		nl::node backgrnd5 = socialRank["backgrnd5"];
-
-		rank_shift = Point<int16_t>(86, 130);
-		name_shift = Point<int16_t>(52, 4);
-
-		origin_left = Texture(backgrnd4).get_origin();
-		origin_right = Texture(backgrnd5).get_origin();
-
-		origin_left = Point<int16_t>(std::abs(origin_left.x()) - 1, std::abs(origin_left.y()));
-		origin_right = Point<int16_t>(std::abs(origin_right.x()), std::abs(origin_right.y()));
-
-		sprites.emplace_back(socialRank["ribbon"]);
-		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(socialRank["backgrnd2"]);
-		sprites.emplace_back(socialRank["backgrnd3"]);
-		sprites.emplace_back(backgrnd4);
-		sprites.emplace_back(backgrnd5);
-
-		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(socialRank["btX"]);
-
-		charset = Charset(socialRank["number"], Charset::Alignment::RIGHT);
-
-		name_left = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
-		name_right = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
-
-		dimension = Texture(backgrnd).get_dimensions();
-		position = position + Point<int16_t>(211, 124);
+		// v83: socialRank node DOESN'T EXIST in v83 UIWindow.img
+		// Immediately deactivate
+		deactivate();
 	}
 
 	void UIRank::draw(float inter) const

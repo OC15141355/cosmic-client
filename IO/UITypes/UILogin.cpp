@@ -49,21 +49,15 @@ namespace ms
 		// v83: login background is in Map.nx, not Map001.nx/MapPretty.nx
 		nl::node map = nl::nx::map["Back"]["login.img"];
 		nl::node back = map["back"];
-		nl::node ani = map["ani"];
 
 		nl::node obj = nl::nx::map["Obj"]["login.img"];
 		nl::node title = nl::nx::ui["Login.img"]["Title"];
 		nl::node common = nl::nx::ui["Login.img"]["Common"];
 
-		nl::node prettyLogo = map["ani"]["16"];
-
+		// v83: background, signboard, and logo from Map.nx (not UI.nx)
 		sprites.emplace_back(back["11"], Point<int16_t>(400, 300));
-		sprites.emplace_back(ani["17"], Point<int16_t>(129, 283));
-		sprites.emplace_back(ani["18"], Point<int16_t>(306, 252));
-		sprites.emplace_back(ani["19"], Point<int16_t>(379, 207));
-		sprites.emplace_back(back["35"], Point<int16_t>(399, 260));
-		sprites.emplace_back(prettyLogo, Point<int16_t>(394, 173));
-		sprites.emplace_back(title["signboard"], Point<int16_t>(391, 330));
+		sprites.emplace_back(obj["Title"]["signboard"]["0"]["0"], Point<int16_t>(400, 300));
+		sprites.emplace_back(obj["Title"]["logo"]["0"], Point<int16_t>(400, 130));
 		sprites.emplace_back(common["frame"], Point<int16_t>(400, 300));
 
 		buttons[Buttons::BT_LOGIN] = std::make_unique<MapleButton>(title["BtLogin"], Point<int16_t>(454, 279));
@@ -97,7 +91,7 @@ namespace ms
 						}
 				);
 
-		accountbg = title["ID"];
+		// v83: no separate ID/PW placeholder textures — signboard has fields built in
 
 		password = Textfield(Text::Font::A13M, Text::Alignment::LEFT, Color::Name::WHITE,
 							 Rectangle<int16_t>(Point<int16_t>(296, 305), Point<int16_t>(446, 329)), 12);
@@ -120,7 +114,6 @@ namespace ms
 				);
 
 		password.set_cryptchar('*');
-		passwordbg = title["PW"];
 
 		saveid = Setting<SaveLogin>::get().load();
 

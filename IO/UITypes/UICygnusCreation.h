@@ -28,6 +28,8 @@
 
 namespace ms
 {
+	// v83: Cygnus Knight character creation — uses Login.img/NewCharKnight
+	// (v167+ used Login.img/CustomizeChar/1000 which doesn't exist in v83)
 	class UICygnusCreation : public UIElement
 	{
 	public:
@@ -54,6 +56,7 @@ namespace ms
 		void randomize_look();
 		const std::string& get_equipname(EquipSlot::Id slot) const;
 
+		// v83: No gender or hair color buttons — skin, weapon, hair color via BtLeft/BtRight
 		enum Buttons : uint16_t
 		{
 			BT_BACK,
@@ -63,30 +66,11 @@ namespace ms
 			BT_CHARC_SKINR,
 			BT_CHARC_WEPL,
 			BT_CHARC_WEPR,
-			BT_CHARC_GENDER_M,
-			BT_CHARC_GEMDER_F,
-			BT_CHARC_HAIRC0,
-			BT_CHARC_HAIRC1,
-			BT_CHARC_HAIRC2,
-			BT_CHARC_HAIRC3,
-			BT_CHARC_HAIRC4,
-			BT_CHARC_HAIRC5,
-			BT_CHARC_HAIRC6,
-			BT_CHARC_HAIRC7
-		};
-
-		enum GenderButtons : uint8_t
-		{
-			GENDER_BACKGROUND,
-			GENDER_HEAD,
-			GENDER_TOP,
-			GENDER_MID,
-			GENDER_BOTTOM
+			BT_CHARC_HAIRCOLORL,
+			BT_CHARC_HAIRCOLORR
 		};
 
 		std::vector<Sprite> sprites_lookboard;
-		std::vector<Sprite> sprites_gender_select;
-		std::vector<Sprite> sprites_keytype;
 		Texture sky;
 		Texture cloud;
 		float cloudfx;
@@ -104,7 +88,7 @@ namespace ms
 		BoolPair<std::vector<int32_t>> shoes;
 		BoolPair<std::vector<int32_t>> weapons;
 
-		bool gender;
+		// v83: No gender select stage — 2-stage flow (customize → name)
 		bool charSet;
 		bool named;
 		bool female;

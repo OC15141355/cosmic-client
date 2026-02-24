@@ -236,4 +236,45 @@ namespace ms
 			UI::get().add_keymapping(i, type, action);
 		}
 	}
+
+	void QuickSlotInitHandler::handle(InPacket& recv) const
+	{
+		// v83: QUICKSLOT_INIT (opcode 159)
+		// Format: 1 byte flag, then if flag != 0, 8 x int32 key indices
+		if (recv.available())
+		{
+			int8_t flag = recv.read_byte();
+
+			if (flag != 0 && recv.available())
+			{
+				// Read the 8 quickslot key indices (DIK scan codes)
+				for (int i = 0; i < 8; i++)
+					recv.read_int(); // quickslot key index
+
+				// TODO: Store these and wire to UIStatusBar quickslot display
+			}
+		}
+	}
+
+	void AutoHpPotHandler::handle(InPacket& recv) const
+	{
+		// v83: AUTO_HP_POT (opcode 336)
+		// Contains the item ID for auto HP potion
+		// TODO: Store in player state for auto-potion feature
+		if (recv.available())
+		{
+			recv.read_int(); // item ID
+		}
+	}
+
+	void AutoMpPotHandler::handle(InPacket& recv) const
+	{
+		// v83: AUTO_MP_POT (opcode 337)
+		// Contains the item ID for auto MP potion
+		// TODO: Store in player state for auto-potion feature
+		if (recv.available())
+		{
+			recv.read_int(); // item ID
+		}
+	}
 }

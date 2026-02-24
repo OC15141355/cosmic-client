@@ -320,7 +320,7 @@ namespace ms
 
 	UIKeySelect::UIKeySelect(std::function<void(bool)> oh, bool l) : okhandler(oh), login(l)
 	{
-		nl::node KeyType = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"];
+		nl::node KeyType = nl::nx::ui["UIWindow.img"]["KeyConfig"]["KeyType"]; // v83: was UIWindow2.img
 		nl::node backgrnd = KeyType["backgrnd"];
 
 		sprites.emplace_back(backgrnd);
@@ -382,7 +382,7 @@ namespace ms
 
 	UIKeyConfirm::UIKeyConfirm(bool alternate, std::function<void()> oh, bool l) : okhandler(oh), login(l)
 	{
-		nl::node alert = nl::nx::ui["UIWindow2.img"]["KeyConfig"]["KeyType"]["alert"];
+		nl::node alert = nl::nx::ui["UIWindow.img"]["KeyConfig"]["KeyType"]["alert"]; // v83: was UIWindow2.img
 		nl::node background = alternate ? alert["alternate"] : alert["default"];
 
 		sprites.emplace_back(background);

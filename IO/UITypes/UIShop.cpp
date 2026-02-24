@@ -36,7 +36,7 @@ namespace ms
 	UIShop::UIShop(const CharLook &in_charlook, const Inventory &in_inventory)
 			: UIDragElement<PosSHOP>(), charlook(in_charlook), inventory(in_inventory)
 	{
-		nl::node src = nl::nx::ui["UIWindow2.img"]["Shop2"];
+		nl::node src = nl::nx::ui["UIWindow.img"]["Shop"]; // v83: was UIWindow2.img/Shop2
 
 		nl::node background = src["backgrnd"];
 		Texture bg = background;

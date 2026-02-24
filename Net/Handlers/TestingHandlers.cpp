@@ -53,4 +53,52 @@ namespace ms
 
 		std::cout << "[FieldEffectHandler]: Unknown value: [" << rand << "]" << std::endl;
 	}
+
+	void BuddyListHandler::handle(InPacket&) const
+	{
+		// v83: BUDDYLIST (opcode 63) — buddy add/remove/online status
+		// TODO: Implement buddy list UI
+	}
+
+	void FamilyInfoHandler::handle(InPacket&) const
+	{
+		// v83: FAMILY_INFO_RESULT (opcode 95) — family system info
+		// TODO: Implement if family system is needed
+	}
+
+	void FamilyPrivilegeHandler::handle(InPacket&) const
+	{
+		// v83: FAMILY_PRIVILEGE_LIST (opcode 100) — family privileges
+		// TODO: Implement if family system is needed
+	}
+
+	void ClaimStatusHandler::handle(InPacket&) const
+	{
+		// v83: CLAIM_STATUS_CHANGED (opcode 47) — event reward tracking
+		// TODO: Implement if event system is needed
+	}
+
+	void SetGenderHandler::handle(InPacket&) const
+	{
+		// v83: SET_GENDER (opcode 58) — sets account gender on client
+		// TODO: Store in account/player state if needed
+	}
+
+	void SetNpcScriptableHandler::handle(InPacket&) const
+	{
+		// v83: SET_NPC_SCRIPTABLE (opcode 263) — marks NPCs as scriptable
+		// TODO: Implement NPC scriptability flags
+	}
+
+	void CashShopOperationHandler::handle(InPacket&) const
+	{
+		// v83: CS_OPERATION (opcode 324) — cash shop operation result
+		// TODO: Handle purchase/gift/transfer responses
+	}
+
+	void CashShopUpdateHandler::handle(InPacket&) const
+	{
+		// v83: CS_UPDATE (opcode 325) — cash shop inventory/balance update
+		// TODO: Update cash shop UI with new balance/items
+	}
 }

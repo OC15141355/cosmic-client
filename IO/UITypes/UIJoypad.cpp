@@ -29,6 +29,14 @@ namespace ms
 		alternative_settings = false; // TODO: Get user's key settings type
 
 		nl::node JoyPad = nl::nx::ui["UIWindow.img"]["JoyPad"];
+
+		// v83: JoyPad node exists but is empty (no children)
+		if (!JoyPad["backgrnd_classic"])
+		{
+			deactivate();
+			return;
+		}
+
 		nl::node Basic = nl::nx::ui["Basic.img"];
 
 		backgrnd[true] = JoyPad["backgrnd_alternative"];

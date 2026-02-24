@@ -36,6 +36,11 @@ namespace ms
 	std::unordered_map<std::string, AudioData> Music::music_cache;
 	bool Music::initialized = false;
 
+	// BGM state: decoder + sound for the currently playing BGM
+	static ma_decoder bgm_decoder;
+	static ma_sound bgm_sound;
+	static bool bgm_active = false;
+
 	Sound::Sound(Name name)
 	{
 		id = soundids[name];
@@ -76,24 +81,47 @@ namespace ms
 			return;
 
 		auto it = Music::sound_cache.find(id);
-		if (it == Music::sound_cache.end())
+		if (it == Music::sound_cache.end() || it->second.data.empty())
 			return;
 
-		const auto& audio_data = it->second;
+		// Fire-and-forget SFX: decode from memory and play inline
+		// miniaudio's ma_engine handles cleanup of inline sounds automatically
+		auto& audio_data = it->second;
 
-		// Play sound from memory using miniaudio
-		// We use ma_engine_play_sound_from_memory which is not available,
-		// so we create a temporary decoder and sound
-		ma_sound sound;
-		ma_result result = ma_sound_init_from_data_source(Music::engine, nullptr, 0, nullptr, &sound);
+		// Create a temporary decoder from the cached audio data
+		ma_decoder* decoder = new ma_decoder;
+		ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, 0);
+		ma_result result = ma_decoder_init_memory(audio_data.data.data(), audio_data.data.size(), &config, decoder);
 
-		// For simplicity in this initial implementation, we'll use a fire-and-forget approach
-		// by writing temporary files. This can be optimized later with custom data sources.
-		// For now, sounds are cached but playback is a TODO until we set up a proper
-		// memory-based decoder pipeline.
+		if (result != MA_SUCCESS)
+		{
+			delete decoder;
+			return;
+		}
 
-		// TODO: Implement memory-based sound playback with ma_decoder
-		// For now this is a silent stub that loads data but doesn't play
+		// Create a sound from the decoder
+		ma_sound* sound = new ma_sound;
+		result = ma_sound_init_from_data_source(Music::engine, decoder,
+			MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, sound);
+
+		if (result != MA_SUCCESS)
+		{
+			ma_decoder_uninit(decoder);
+			delete decoder;
+			delete sound;
+			return;
+		}
+
+		// Set an end callback to clean up the sound and decoder when done
+		ma_sound_set_end_callback(sound, [](void* pUserData, ma_sound* pSound) {
+			auto* dec = static_cast<ma_decoder*>(pUserData);
+			ma_sound_uninit(pSound);
+			ma_decoder_uninit(dec);
+			delete dec;
+			delete pSound;
+		}, decoder);
+
+		ma_sound_start(sound);
 	}
 
 	Error Sound::init()
@@ -136,6 +164,15 @@ namespace ms
 
 	void Sound::close()
 	{
+		// Stop BGM if playing
+		if (bgm_active)
+		{
+			ma_sound_stop(&bgm_sound);
+			ma_sound_uninit(&bgm_sound);
+			ma_decoder_uninit(&bgm_decoder);
+			bgm_active = false;
+		}
+
 		if (Music::engine)
 		{
 			ma_engine_uninit(Music::engine);
@@ -221,6 +258,15 @@ namespace ms
 		if (path == bgmpath)
 			return;
 
+		// Stop current BGM if playing
+		if (bgm_active)
+		{
+			ma_sound_stop(&bgm_sound);
+			ma_sound_uninit(&bgm_sound);
+			ma_decoder_uninit(&bgm_decoder);
+			bgm_active = false;
+		}
+
 		// Extract audio data from NX if not cached
 		if (music_cache.find(path) == music_cache.end())
 		{
@@ -235,9 +281,38 @@ namespace ms
 			}
 		}
 
-		// TODO: Play BGM from cached memory data with looping
-		// Requires setting up a custom ma_data_source for memory-based playback
+		auto it = music_cache.find(path);
+		if (it == music_cache.end() || it->second.data.empty())
+		{
+			bgmpath = path;
+			return;
+		}
 
+		// Decode BGM from memory
+		ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, 0);
+		ma_result result = ma_decoder_init_memory(
+			it->second.data.data(), it->second.data.size(), &config, &bgm_decoder);
+
+		if (result != MA_SUCCESS)
+		{
+			bgmpath = path;
+			return;
+		}
+
+		// Create a looping sound from the decoder
+		result = ma_sound_init_from_data_source(engine, &bgm_decoder,
+			MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, &bgm_sound);
+
+		if (result != MA_SUCCESS)
+		{
+			ma_decoder_uninit(&bgm_decoder);
+			bgmpath = path;
+			return;
+		}
+
+		ma_sound_set_looping(&bgm_sound, MA_TRUE);
+		ma_sound_start(&bgm_sound);
+		bgm_active = true;
 		bgmpath = path;
 	}
 
@@ -251,6 +326,15 @@ namespace ms
 		if (path == bgmpath)
 			return;
 
+		// Stop current BGM if playing
+		if (bgm_active)
+		{
+			ma_sound_stop(&bgm_sound);
+			ma_sound_uninit(&bgm_sound);
+			ma_decoder_uninit(&bgm_decoder);
+			bgm_active = false;
+		}
+
 		// Extract audio data from NX if not cached
 		if (music_cache.find(path) == music_cache.end())
 		{
@@ -265,29 +349,59 @@ namespace ms
 			}
 		}
 
-		// TODO: Play once from cached memory data (no loop)
+		auto it = music_cache.find(path);
+		if (it == music_cache.end() || it->second.data.empty())
+		{
+			bgmpath = path;
+			return;
+		}
 
+		// Decode BGM from memory (no loop)
+		ma_decoder_config config = ma_decoder_config_init(ma_format_f32, 0, 0);
+		ma_result result = ma_decoder_init_memory(
+			it->second.data.data(), it->second.data.size(), &config, &bgm_decoder);
+
+		if (result != MA_SUCCESS)
+		{
+			bgmpath = path;
+			return;
+		}
+
+		result = ma_sound_init_from_data_source(engine, &bgm_decoder,
+			MA_SOUND_FLAG_NO_SPATIALIZATION, nullptr, &bgm_sound);
+
+		if (result != MA_SUCCESS)
+		{
+			ma_decoder_uninit(&bgm_decoder);
+			bgmpath = path;
+			return;
+		}
+
+		ma_sound_set_looping(&bgm_sound, MA_FALSE);
+		ma_sound_start(&bgm_sound);
+		bgm_active = true;
 		bgmpath = path;
 	}
 
 	Error Music::init()
 	{
+		// Initialize the miniaudio engine for audio playback
 		engine = new ma_engine;
+		ma_engine_config engineConfig = ma_engine_config_init();
 
-		ma_engine_config config = ma_engine_config_init();
-		ma_result result = ma_engine_init(&config, engine);
+		ma_result result = ma_engine_init(&engineConfig, engine);
 
 		if (result != MA_SUCCESS)
 		{
-			std::cout << "Failed to initialize miniaudio engine: " << result << std::endl;
+			std::cout << "Audio: failed to initialize engine (error " << result << ")" << std::endl;
 			delete engine;
 			engine = nullptr;
-			return Error::Code::AUDIO;
+			initialized = false;
+			return Error::Code::NONE; // Non-fatal: game works without audio
 		}
 
 		initialized = true;
-
-		std::cout << "Audio initialized (miniaudio)" << std::endl;
+		std::cout << "Audio: engine initialized successfully" << std::endl;
 
 		return Error::Code::NONE;
 	}
@@ -297,7 +411,10 @@ namespace ms
 		if (!engine)
 			return false;
 
-		ma_engine_set_volume(engine, static_cast<float>(vol) / 100.0f);
+		// Set volume on BGM sound if active
+		if (bgm_active)
+			ma_sound_set_volume(&bgm_sound, static_cast<float>(vol) / 100.0f);
+
 		return true;
 	}
 

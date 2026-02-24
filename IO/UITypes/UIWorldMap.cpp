@@ -32,10 +32,8 @@ namespace ms
 	UIWorldMap::UIWorldMap() : UIDragElement<PosMAP>()
 	{
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node WorldMap = nl::nx::ui["UIWindow2.img"]["WorldMap"];
-		nl::node WorldMapSearch = WorldMap["WorldMapSearch"];
+		nl::node WorldMap = nl::nx::ui["UIWindow.img"]["WorldMap"]; // v83: only has Border/0-7 and title
 		nl::node Border = WorldMap["Border"]["0"];
-		nl::node backgrnd = WorldMapSearch["backgrnd"];
 		nl::node MapHelper = nl::nx::map["MapHelper.img"]["worldMap"];
 
 		cur_pos = MapHelper["curPos"];
@@ -45,11 +43,9 @@ namespace ms
 
 		sprites.emplace_back(Border);
 
-		search_background = backgrnd;
-		search_notice = WorldMapSearch["notice"];
-
 		bg_dimensions = Texture(Border).get_dimensions();
-		bg_search_dimensions = search_background.get_dimensions();
+		// v83: no search panel (WorldMapSearch doesn't exist)
+		bg_search_dimensions = Point<int16_t>(0, 0);
 
 		int16_t bg_dimension_x = bg_dimensions.x();
 		background_dimensions = Point<int16_t>(bg_dimension_x, 0);
@@ -61,22 +57,20 @@ namespace ms
 		Point<int16_t> close_dimensions = Point<int16_t>(bg_dimension_x - 22, 4);
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions);
+		// v83: BtSearch, BtAutoFly, BtNaviRegister don't exist — null = invisible (safe)
 		buttons[Buttons::BT_SEARCH] = std::make_unique<MapleButton>(WorldMap["BtSearch"]);
 		buttons[Buttons::BT_AUTOFLY] = std::make_unique<MapleButton>(WorldMap["BtAutoFly_1"]);
 		buttons[Buttons::BT_NAVIREG] = std::make_unique<MapleButton>(WorldMap["BtNaviRegister"]);
-		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(close, close_dimensions + Point<int16_t>(
-				bg_search_dimensions.x(), 0));
-		buttons[Buttons::BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMapSearch["BtAllsearch"],
-																	   background_dimensions);
+		buttons[Buttons::BT_SEARCH_CLOSE] = std::make_unique<MapleButton>(WorldMap["BtSearchClose"]);
+		buttons[Buttons::BT_ALLSEARCH] = std::make_unique<MapleButton>(WorldMap["BtAllsearch"]);
 
-		Point<int16_t> search_text_pos = Point<int16_t>(bg_dimension_x + 14, 25);
-		Point<int16_t> search_box_dim = Point<int16_t>(83, 15);
-		Rectangle<int16_t> search_text_dim = Rectangle<int16_t>(search_text_pos, search_text_pos + search_box_dim);
+		// v83: disable search entirely (no search panel)
+		search = false;
+		buttons[Buttons::BT_SEARCH]->set_active(false);
+		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(false);
+		buttons[Buttons::BT_ALLSEARCH]->set_active(false);
 
-		search_text = Textfield(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::BLACK, search_text_dim, 8);
-
-		set_search(true);
-
+		dimension = bg_dimensions;
 		dragarea = Point<int16_t>(bg_dimension_x, 20);
 	}
 
@@ -84,12 +78,7 @@ namespace ms
 	{
 		UIElement::draw_sprites(alpha);
 
-		if (search)
-		{
-			search_background.draw(position + background_dimensions);
-			search_notice.draw(position + background_dimensions);
-			search_text.draw(position + Point<int16_t>(1, -5));
-		}
+		// v83: no search panel (WorldMapSearch doesn't exist)
 
 		base_img.draw(position + base_position);
 
@@ -156,8 +145,7 @@ namespace ms
 			update_world(parent_map);
 		}
 
-		if (search)
-			search_text.update(position);
+		// v83: no search panel
 
 		for (size_t i = 0; i < MAPSPOT_TYPE_MAX; i++)
 			npc_pos[i].update(1);
@@ -173,7 +161,7 @@ namespace ms
 
 		if (!active)
 		{
-			set_search(true);
+			// v83: no search panel
 			update_world(user_map);
 		}
 	}
@@ -182,22 +170,17 @@ namespace ms
 	{
 		if (pressed && escape)
 		{
-			if (search)
+			// v83: no search panel
+			if (parent_map == "")
 			{
-				set_search(false);
+				toggle_active();
+
+				update_world(user_map);
 			} else
 			{
-				if (parent_map == "")
-				{
-					toggle_active();
+				Sound(Sound::Name::SELECTMAP).play();
 
-					update_world(user_map);
-				} else
-				{
-					Sound(Sound::Name::SELECTMAP).play();
-
-					update_world(parent_map);
-				}
+				update_world(parent_map);
 			}
 		}
 	}
@@ -214,12 +197,7 @@ namespace ms
 			case Buttons::BT_CLOSE:
 				deactivate();
 				break;
-			case Buttons::BT_SEARCH:
-				set_search(!search);
-				break;
-			case Buttons::BT_SEARCH_CLOSE:
-				set_search(false);
-				break;
+			// v83: no search panel
 			default:
 				break;
 		}
@@ -245,8 +223,7 @@ namespace ms
 
 	Cursor::State UIWorldMap::send_cursor(bool clicked, Point<int16_t> cursorpos)
 	{
-		if (Cursor::State new_state = search_text.send_cursor(cursorpos, clicked))
-			return new_state;
+		// v83: no search text field
 
 		show_path_img = false;
 
@@ -272,20 +249,9 @@ namespace ms
 
 	void UIWorldMap::set_search(bool enable)
 	{
-		search = enable;
-
-		buttons[Buttons::BT_SEARCH_CLOSE]->set_active(enable);
-		buttons[Buttons::BT_ALLSEARCH]->set_active(enable);
-
-		if (enable)
-		{
-			search_text.set_state(Textfield::State::NORMAL);
-			dimension = bg_dimensions + Point<int16_t>(bg_search_dimensions.x(), 0);
-		} else
-		{
-			search_text.set_state(Textfield::State::DISABLED);
-			dimension = bg_dimensions;
-		}
+		// v83: no search panel — always disabled
+		search = false;
+		dimension = bg_dimensions;
 	}
 
 	void UIWorldMap::update_world(std::string map)

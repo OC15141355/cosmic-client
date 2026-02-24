@@ -32,8 +32,8 @@ namespace ms
 	UINpcTalk::UINpcTalk() : offset(0), unitrows(0), rowmax(0), show_slider(false), draw_text(false),
 							 formatted_text(""), formatted_text_pos(0), timestep(0)
 	{
-		nl::node UIWindow2 = nl::nx::ui["UIWindow2.img"];
-		nl::node UtilDlgEx = UIWindow2["UtilDlgEx"];
+		nl::node UIWindow = nl::nx::ui["UIWindow.img"]; // v83: was UIWindow2.img
+		nl::node UtilDlgEx = UIWindow["UtilDlgEx"];
 
 		top = UtilDlgEx["t"];
 		fill = UtilDlgEx["c"];
@@ -50,7 +50,7 @@ namespace ms
 		// TODO: Replace when _inlink is fixed
 		//buttons[Buttons::NO] = std::make_unique<MapleButton>(UtilDlgEx["BtNo"]);
 
-		nl::node Quest = UIWindow2["Quest"];
+		nl::node Quest = UIWindow["Quest"];
 
 		buttons[Buttons::NO] = std::make_unique<MapleButton>(Quest["BtNo"]);
 		buttons[Buttons::OK] = std::make_unique<MapleButton>(UtilDlgEx["BtOK"]);

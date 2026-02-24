@@ -163,7 +163,10 @@ namespace ms
 		bool vsync = Setting<VSync>::get().load();
 		glfwSwapInterval(vsync ? 1 : 0);
 
-		glViewport(0, 0, width, height);
+		// v83/macOS: use framebuffer size for viewport (Retina displays are 2x)
+		int fbWidth, fbHeight;
+		glfwGetFramebufferSize(glwnd, &fbWidth, &fbHeight);
+		glViewport(0, 0, fbWidth, fbHeight);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 

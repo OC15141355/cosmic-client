@@ -30,54 +30,26 @@ namespace ms
 	UIEvent::UIEvent() : UIDragElement<PosEVENT>()
 	{
 		offset = 0;
-		event_count = 16;
+		event_count = 0; // v83: no active events to display
 
-		nl::node main = nl::nx::ui["UIWindow2.img"]["EventList"]["main"];
+		// v83: EventList doesn't exist, use MapleEvent instead (simple: BtClose, Loading, backgrnd)
+		nl::node MapleEvent = nl::nx::ui["UIWindow.img"]["MapleEvent"];
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
 
-		nl::node backgrnd = main["backgrnd"];
+		nl::node backgrnd = MapleEvent["backgrnd"];
 		Point<int16_t> bg_dimensions = Texture(backgrnd).get_dimensions();
 
 		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(main["backgrnd2"], Point<int16_t>(1, 0));
 
 		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(bg_dimensions.x() - 19, 6));
 
-		bool in_progress = false;
-		bool item_rewards = false;
-
-		for (size_t i = 0; i < 5; i++)
-			events.emplace_back(BoolPair<bool>(true, true));
-
-		for (size_t i = 0; i < 10; i++)
-			events.emplace_back(BoolPair<bool>(false, true));
-
-		events.emplace_back(BoolPair<bool>(false, false));
-
+		// v83: MapleEvent is minimal — no event list, no item_reward, no label_on/label_next
+		// event_title, event_date, item_reward, text_reward, next, label_on, label_next left as default (empty)
 		for (size_t i = 0; i < 3; i++)
 			event_title[i] = ShadowText(Text::Font::A18M, Text::Alignment::LEFT, Color::Name::HALFANDHALF, Color::Name::ENDEAVOUR);
 
 		for (size_t i = 0; i < 3; i++)
 			event_date[i] = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
-
-		item_reward = main["event"]["normal"];
-		text_reward = main["liveEvent"]["normal"];
-		next = main["liveEvent"]["next"];
-		label_on = main["label_on"]["0"];
-		label_next = main["label_next"]["0"];
-
-		slider = Slider(
-				Slider::Type::DEFAULT_SILVER, Range<int16_t>(86, 449), 396, 3, event_count,
-				[&](bool upwards)
-				{
-					int16_t shift = upwards ? -1 : 1;
-					bool above = offset + shift >= 0;
-					bool below = offset + shift <= event_count - 3;
-
-					if (above && below)
-						offset += shift;
-				}
-		);
 
 		dimension = bg_dimensions;
 		dragarea = Point<int16_t>(dimension.x(), 20);
@@ -85,63 +57,8 @@ namespace ms
 
 	void UIEvent::draw(float inter) const
 	{
+		// v83: simple MapleEvent window — just background + close button
 		UIElement::draw(inter);
-
-		slider.draw(position);
-
-		for (size_t i = 0; i < 3; i++)
-		{
-			int16_t slot = i + offset;
-
-			if (slot >= event_count)
-				break;
-
-			auto event_pos = Point<int16_t>(12, 87 + 125 * i);
-
-			auto evnt = events[slot];
-			auto in_progress = evnt[1];
-			auto itm_reward = evnt[0];
-
-			if (itm_reward)
-			{
-				item_reward.draw(position + event_pos);
-
-				int16_t x_adj = 0;
-
-				for (size_t f = 0; f < 5; f++)
-				{
-					const ItemData& item_data = ItemData::get(2000000 + f);
-					Texture icon = item_data.get_icon(true);
-
-					if (f == 2)
-						x_adj = 2;
-					else if (f == 3)
-						x_adj = 6;
-					else if (f == 4)
-						x_adj = 9;
-
-					icon.draw(position + Point<int16_t>(33 + x_adj + 46 * f, 191 + 125 * i));
-				}
-			}
-			else
-			{
-				text_reward.draw(position + event_pos);
-
-				if (!in_progress)
-					next.draw(position + event_pos);
-			}
-
-			if (in_progress)
-				label_on.draw(position + event_pos);
-			else
-				label_next.draw(position + event_pos);
-
-			auto title_pos = Point<int16_t>(28, 95 + 125 * i);
-			auto date_pos = Point<int16_t>(28, 123 + 125 * i);
-
-			event_title[i].draw(position + title_pos);
-			event_date[i].draw(position + date_pos);
-		}
 	}
 
 	void UIEvent::update()

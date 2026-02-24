@@ -44,8 +44,8 @@ namespace ms
 		simpleMode = Setting<MiniMapSimpleMode>::get().load();
 
 		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
-		MiniMap = nl::nx::ui["UIWindow2.img"][node];
-		listNpc = nl::nx::ui["UIWindow2.img"]["MiniMap"]["ListNpc"];
+		MiniMap = nl::nx::ui["UIWindow.img"][node]; // v83: was UIWindow2.img
+		listNpc = nl::nx::ui["UIWindow.img"]["MiniMap"]["ListNpc"]; // v83: was UIWindow2.img
 
 		buttons[Buttons::BT_MIN] = std::make_unique<MapleButton>(MiniMap["BtMin"], Point<int16_t>(195, -6));
 		buttons[Buttons::BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], Point<int16_t>(209, -6));
@@ -59,7 +59,7 @@ namespace ms
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
 		marker = Setting<MiniMapDefaultHelpers>::get().load()
-				 ? nl::nx::ui["UIWindow2.img"]["MiniMapSimpleMode"]["DefaultHelper"]
+				 ? nl::nx::ui["UIWindow.img"]["MiniMapSimpleMode"]["DefaultHelper"] // v83: was UIWindow2.img
 				 : nl::nx::map["MapHelper.img"]["minimap"];
 
 		player_marker = Animation(marker["user"]);

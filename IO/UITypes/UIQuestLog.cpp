@@ -28,30 +28,30 @@ namespace ms
 		tab = Buttons::TAB0;
 
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose3"];
-		nl::node quest = nl::nx::ui["UIWindow2.img"]["Quest"];
-		nl::node list = quest["list"];
+		nl::node quest = nl::nx::ui["UIWindow.img"]["Quest"]; // v83: was UIWindow2.img, flat (no list/ intermediate)
 
-		nl::node backgrnd = list["backgrnd"];
+		nl::node backgrnd = quest["backgrnd"];
 
 		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(list["backgrnd2"]);
+		sprites.emplace_back(quest["backgrnd2"]);
 
-		notice_sprites.emplace_back(list["notice0"]);
-		notice_sprites.emplace_back(list["notice1"]);
-		notice_sprites.emplace_back(list["notice2"]);
+		notice_sprites.emplace_back(quest["notice0"]);
+		notice_sprites.emplace_back(quest["notice1"]);
+		notice_sprites.emplace_back(quest["notice2"]);
 
-		nl::node taben = list["Tab"]["enabled"];
-		nl::node tabdis = list["Tab"]["disabled"];
+		nl::node taben = quest["Tab"]["enabled"];
+		nl::node tabdis = quest["Tab"]["disabled"];
 
 		buttons[Buttons::TAB0] = std::make_unique<TwoSpriteButton>(tabdis["0"], taben["0"]);
 		buttons[Buttons::TAB1] = std::make_unique<TwoSpriteButton>(tabdis["1"], taben["1"]);
 		buttons[Buttons::TAB2] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
 		buttons[Buttons::CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(275, 6));
-		buttons[Buttons::SEARCH] = std::make_unique<MapleButton>(list["BtSearch"]);
-		buttons[Buttons::ALL_LEVEL] = std::make_unique<MapleButton>(list["BtAllLevel"]);
-		buttons[Buttons::MY_LOCATION] = std::make_unique<MapleButton>(list["BtMyLocation"]);
+		// v83: BtSearch, BtAllLevel, BtMyLocation don't exist — null node = invisible (safe)
+		buttons[Buttons::SEARCH] = std::make_unique<MapleButton>(quest["BtSearch"]);
+		buttons[Buttons::ALL_LEVEL] = std::make_unique<MapleButton>(quest["BtAllLevel"]);
+		buttons[Buttons::MY_LOCATION] = std::make_unique<MapleButton>(quest["BtMyLocation"]);
 
-		search_area = list["searchArea"];
+		search_area = quest["searchArea"];
 		auto search_area_dim = search_area.get_dimensions();
 		auto search_area_origin = search_area.get_origin().abs();
 

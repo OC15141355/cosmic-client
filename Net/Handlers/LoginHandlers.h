@@ -74,4 +74,11 @@ namespace ms
 	{
 		void handle(InPacket& recv) const override;
 	};
+
+	// v83: Handler for SELECT_CHARACTER_BY_VAC (opcode 9)
+	// Debug handler — dumps payload to identify server response format
+	class SelectCharByVacHandler : public PacketHandler
+	{
+		void handle(InPacket& recv) const override;
+	};
 }

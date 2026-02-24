@@ -104,27 +104,28 @@ namespace ms
 			: UIDragElement<PosSKILL>(), stats(in_stats), skillbook(in_skillbook), grabbing(false), tab(0),
 			  macro_enabled(false), sp_enabled(false)
 	{
-		nl::node Skill = nl::nx::ui["UIWindow2.img"]["Skill"];
-		nl::node main = Skill["main"];
-		nl::node ui_backgrnd = main["backgrnd"];
+		nl::node Skill = nl::nx::ui["UIWindow.img"]["Skill"]; // v83: flat structure (no main/ intermediate)
+		nl::node ui_backgrnd = Skill["backgrnd"];
 
 		bg_dimensions = Texture(ui_backgrnd).get_dimensions();
 
-		skilld = main["skill0"];
-		skille = main["skill1"];
-		skillb = main["skillBlank"];
-		line = main["line"];
+		skilld = Skill["skill0"];
+		skille = Skill["skill1"];
+		skillb = Skill["skillBlank"]; // v83: may not exist, empty sprite is safe
+		line = Skill["line"];
 
-		buttons[Buttons::BT_HYPER] = std::make_unique<MapleButton>(main["BtHyper"]);
-		buttons[Buttons::BT_GUILDSKILL] = std::make_unique<MapleButton>(main["BtGuildSkill"]);
-		buttons[Buttons::BT_RIDE] = std::make_unique<MapleButton>(main["BtRide"]);
-		buttons[Buttons::BT_MACRO] = std::make_unique<MapleButton>(main["BtMacro"]);
+		// v83: BtHyper, BtGuildSkill, BtRide, BtMacro don't exist — null node = invisible (safe)
+		buttons[Buttons::BT_HYPER] = std::make_unique<MapleButton>(Skill["BtHyper"]);
+		buttons[Buttons::BT_GUILDSKILL] = std::make_unique<MapleButton>(Skill["BtGuildSkill"]);
+		buttons[Buttons::BT_RIDE] = std::make_unique<MapleButton>(Skill["BtRide"]);
+		buttons[Buttons::BT_MACRO] = std::make_unique<MapleButton>(Skill["BtMacro"]);
 
 		buttons[Buttons::BT_HYPER]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_GUILDSKILL]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BT_RIDE]->set_state(Button::State::DISABLED);
 
-		nl::node skillPoint = nl::nx::ui["UIWindow4.img"]["Skill"]["skillPoint"];
+		// v83: skillPoint sub-node doesn't exist — use BtSpUp from main Skill node for SP dialog
+		nl::node skillPoint = Skill["skillPoint"]; // v83: null, guarded below
 
 		sp_backgrnd = skillPoint["backgrnd"];
 		sp_backgrnd2 = skillPoint["backgrnd2"];
@@ -150,9 +151,10 @@ namespace ms
 		sp_name = Text(Text::Font::A12B, Text::Alignment::CENTER, Color::Name::WHITE);
 
 		sprites.emplace_back(ui_backgrnd, Point<int16_t>(1, 0));
-		sprites.emplace_back(main["backgrnd2"]);
-		sprites.emplace_back(main["backgrnd3"]);
+		sprites.emplace_back(Skill["backgrnd2"]);
+		sprites.emplace_back(Skill["backgrnd3"]);
 
+		// v83: macro sub-node doesn't exist — all null = empty textures/invisible buttons (safe)
 		nl::node macro = Skill["macro"];
 
 		macro_backgrnd = macro["backgrnd"];
@@ -168,7 +170,7 @@ namespace ms
 
 		buttons[Buttons::BT_CLOSE] = std::make_unique<MapleButton>(close, Point<int16_t>(bg_dimensions.x() - 23, 6));
 
-		nl::node Tab = main["Tab"];
+		nl::node Tab = Skill["Tab"];
 		nl::node enabled = Tab["enabled"];
 		nl::node disabled = Tab["disabled"];
 
@@ -189,7 +191,7 @@ namespace ms
 				x_adj = ROW_WIDTH;
 
 			Point<int16_t> spup_position = SKILL_OFFSET + Point<int16_t>(124 + x_adj, 20 + y_adj);
-			buttons[i] = std::make_unique<MapleButton>(main["BtSpUp"], spup_position);
+			buttons[i] = std::make_unique<MapleButton>(Skill["BtSpUp"], spup_position); // v83: BtSpUp is directly under Skill
 
 			if (spupid % 2)
 				y_adj += ROW_HEIGHT;
