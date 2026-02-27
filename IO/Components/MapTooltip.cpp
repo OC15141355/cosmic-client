@@ -29,13 +29,15 @@ namespace ms
 	MapTooltip::MapTooltip() : name(""), description(""), fillwidth(MIN_WIDTH), fillheight(0)
 	{
 		nl::node Frame = nl::nx::ui["UIToolTip.img"]["Item"]["Frame2"];
-		nl::node WorldMap = nl::nx::ui["UIWindow.img"]["ToolTip"]["WorldMap"]; // v83: was UIWindow2.img
+		// v83: ToolTip has Equip sub-node only, no WorldMap — Mob/Npc/Party icons not available
+		// These resolve to empty textures (safe, no-op draw)
+		nl::node WorldMap = nl::nx::ui["UIWindow.img"]["ToolTip"]["WorldMap"]; // v83: null
 
 		frame = Frame;
 		cover = Frame["cover"];
-		Mob = WorldMap["Mob"];
-		Npc = WorldMap["Npc"];
-		Party = WorldMap["Party"];
+		Mob = WorldMap["Mob"];   // v83: null → empty texture
+		Npc = WorldMap["Npc"];   // v83: null → empty texture
+		Party = WorldMap["Party"]; // v83: null → empty texture
 	}
 
 	void MapTooltip::draw(Point<int16_t> pos) const

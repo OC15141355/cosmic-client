@@ -44,6 +44,7 @@ namespace ms
 		auto bg_dimensions = bg.get_dimensions();
 
 		sprites.emplace_back(background);
+		// v83: no backgrnd2/3/4 — empty sprites are safe (no-op draw)
 		sprites.emplace_back(src["backgrnd2"]);
 		sprites.emplace_back(src["backgrnd3"]);
 		sprites.emplace_back(src["backgrnd4"]);
@@ -52,6 +53,8 @@ namespace ms
 		buttons[Buttons::SELL_ITEM] = std::make_unique<MapleButton>(src["BtSell"]);
 		buttons[Buttons::EXIT] = std::make_unique<MapleButton>(src["BtExit"]);
 
+		// v83: no checkBox node — right-click-sell toggle not available
+		// Use empty textures; AreaButton with zero dimensions is effectively disabled
 		Texture cben = src["checkBox"][0];
 		Texture cbdis = src["checkBox"][1];
 
@@ -103,7 +106,7 @@ namespace ms
 		}
 
 		buy_selection = src["select"];
-		sell_selection = src["select2"];
+		sell_selection = src["select"]; // v83: no select2 — reuse select for sell highlight
 		meso = src["meso"];
 
 		mesolabel = Text(Text::Font::A11M, Text::Alignment::RIGHT, Color::Name::MINESHAFT);

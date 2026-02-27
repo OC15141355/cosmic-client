@@ -43,36 +43,43 @@ namespace ms
 		buttons[Buttons::BT_TAB_BOSS] = std::make_unique<TwoSpriteButton>(tabdis["2"], taben["2"]);
 		buttons[Buttons::BT_TAB_BLACKLIST] = std::make_unique<TwoSpriteButton>(tabdis["3"], taben["3"]);
 
-		// Party Tab — v83: Party is directly under UserList (no Main/)
+		// Party Tab — v83: Party is directly under UserList
 		nl::node Party = UserList["Party"];
-		nl::node PartySearch = Party["PartySearch"];
 
 		party_tab = Tab::PARTY_MINE;
-		party_title = Party["title"];
+		party_title = Party["party0"]; // v83: no title node, use party0 as header background
 
-		// v83: Sheet2 may not exist — null sprites are safe
+		// v83: no Sheet2 — use Party/party0-5 for grid backgrounds
 		for (size_t i = 0; i <= 4; i++)
-			party_mine_grid[i] = UserList["Sheet2"][i];
+		{
+			std::string key = "party" + std::to_string(i);
+			party_mine_grid[i] = Party[key];
+		}
 
 		party_mine_name = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, "none", 0);
 
-		nl::node party_taben = Party["Tab"]["enabled"];
-		nl::node party_tabdis = Party["Tab"]["disabled"];
+		// v83: no Party/Tab sub-node — party sub-tabs won't render
+		nl::node party_taben = Party["Tab"]["enabled"]; // null
+		nl::node party_tabdis = Party["Tab"]["disabled"]; // null
 
-		buttons[Buttons::BT_PARTY_CREATE] = std::make_unique<MapleButton>(Party["BtPartyMake"]);
-		buttons[Buttons::BT_PARTY_INVITE] = std::make_unique<MapleButton>(Party["BtPartyInvite"]);
-		buttons[Buttons::BT_PARTY_LEAVE] = std::make_unique<MapleButton>(Party["BtPartyOut"]);
-		buttons[Buttons::BT_PARTY_SETTINGS] = std::make_unique<MapleButton>(Party["BtPartySettings"]);
+		// v83: button names differ — BtCreate (not BtPartyMake), BtInvite (not BtPartyInvite), etc.
+		buttons[Buttons::BT_PARTY_CREATE] = std::make_unique<MapleButton>(Party["BtCreate"]);
+		buttons[Buttons::BT_PARTY_INVITE] = std::make_unique<MapleButton>(Party["BtInvite"]);
+		buttons[Buttons::BT_PARTY_LEAVE] = std::make_unique<MapleButton>(Party["BtWithdraw"]);
+		buttons[Buttons::BT_PARTY_SETTINGS] = std::make_unique<MapleButton>(Party["BtPartySettings"]); // v83: doesn't exist
 		buttons[Buttons::BT_PARTY_CREATE]->set_active(false);
 		buttons[Buttons::BT_PARTY_INVITE]->set_active(false);
 		buttons[Buttons::BT_PARTY_LEAVE]->set_active(false);
 		buttons[Buttons::BT_PARTY_SETTINGS]->set_active(false);
 
+		// v83: party sub-tabs null — invisible buttons (safe)
 		buttons[Buttons::BT_TAB_PARTY_MINE] = std::make_unique<TwoSpriteButton>(party_tabdis["0"], party_taben["0"]);
 		buttons[Buttons::BT_TAB_PARTY_SEARCH] = std::make_unique<TwoSpriteButton>(party_tabdis["1"], party_taben["1"]);
 		buttons[Buttons::BT_TAB_PARTY_MINE]->set_active(false);
 		buttons[Buttons::BT_TAB_PARTY_SEARCH]->set_active(false);
 
+		// v83: no PartySearch sub-node — null sprites (safe)
+		nl::node PartySearch = Party["PartySearch"]; // null
 		party_search_grid[0] = PartySearch["partyName"];
 		party_search_grid[1] = PartySearch["request"];
 		party_search_grid[2] = PartySearch["table"];
@@ -89,20 +96,27 @@ namespace ms
 							  party_rowmax, [](bool)
 							  {});
 
-		// Buddy Tab — v83: Friend is directly under UserList (no Main/)
+		// Buddy Tab — v83: Friend is directly under UserList
 		nl::node Friend = UserList["Friend"];
 
 		friend_tab = Tab::FRIEND_ALL;
+		// v83: no Friend/title or CbCondition/text — null sprites (safe, no-op draw)
 		friend_sprites.emplace_back(Friend["title"]);
 		friend_sprites.emplace_back(Friend["CbCondition"]["text"]);
-		friend_sprites.emplace_back(UserList["line"], DrawArgument(Point<int16_t>(132, 115), Point<int16_t>(230, 0)));
+		// v83: use Friend/line instead of top-level UserList/line
+		friend_sprites.emplace_back(Friend["line"], DrawArgument(Point<int16_t>(132, 115), Point<int16_t>(230, 0)));
 
+		// v83: no BtSheetIClose — null button (safe, invisible)
 		buttons[Buttons::BT_FRIEND_GROUP_0] = std::make_unique<MapleButton>(UserList["BtSheetIClose"],
 																			Point<int16_t>(13, 118));
 		buttons[Buttons::BT_FRIEND_GROUP_0]->set_active(false);
 
+		// v83: no Sheet1 — use Friend/friend0-3 for grid backgrounds
 		for (size_t i = 0; i <= 3; i++)
-			friend_grid[i] = UserList["Sheet1"][i];
+		{
+			std::string key = "friend" + std::to_string(i);
+			friend_grid[i] = Friend[key];
+		}
 
 		std::string text =
 				"(" + std::to_string(friend_count) + std::string("/") + std::to_string(friend_total) + std::string(")");
@@ -116,13 +130,14 @@ namespace ms
 
 		buttons[Buttons::BT_FRIEND_ADD] = std::make_unique<MapleButton>(Friend["BtAddFriend"]);
 		buttons[Buttons::BT_FRIEND_ADD_GROUP] = std::make_unique<MapleButton>(Friend["BtAddGroup"]);
-		buttons[Buttons::BT_FRIEND_EXPAND] = std::make_unique<MapleButton>(Friend["BtPlusFriend"]);
+		buttons[Buttons::BT_FRIEND_EXPAND] = std::make_unique<MapleButton>(Friend["BtPlusFriend"]); // v83: doesn't exist
 		buttons[Buttons::BT_FRIEND_ADD]->set_active(false);
 		buttons[Buttons::BT_FRIEND_ADD_GROUP]->set_active(false);
 		buttons[Buttons::BT_FRIEND_EXPAND]->set_active(false);
 
-		buttons[Buttons::BT_TAB_FRIEND_ALL] = std::make_unique<MapleButton>(Friend["TapShowAll"]);
-		buttons[Buttons::BT_TAB_FRIEND_ONLINE] = std::make_unique<MapleButton>(Friend["TapShowOnline"]);
+		// v83: button names are BtShowAll/BtShowOnline (not TapShowAll/TapShowOnline)
+		buttons[Buttons::BT_TAB_FRIEND_ALL] = std::make_unique<MapleButton>(Friend["BtShowAll"]);
+		buttons[Buttons::BT_TAB_FRIEND_ONLINE] = std::make_unique<MapleButton>(Friend["BtShowOnline"]);
 		buttons[Buttons::BT_TAB_FRIEND_ALL]->set_active(false);
 		buttons[Buttons::BT_TAB_FRIEND_ONLINE]->set_active(false);
 
@@ -135,8 +150,8 @@ namespace ms
 								friends_unitrows, friends_rowmax, [](bool)
 								{});
 
-		// Boss tab — v83: Boss may not exist (not in v83 UserList), null = invisible (safe)
-		nl::node Boss = UserList["Boss"];
+		// v83: Boss sub-node doesn't exist — entire boss tab is invisible (all null sprites/buttons)
+		nl::node Boss = UserList["Boss"]; // null
 
 		boss_sprites.emplace_back(Boss["base"]);
 		boss_sprites.emplace_back(Boss["base3"]);
@@ -168,21 +183,28 @@ namespace ms
 		buttons[Buttons::BT_BOSS_DIFF_R]->set_active(false);
 		buttons[Buttons::BT_BOSS_GO]->set_active(false);
 
-		// Blacklist tab — v83: BlackList directly under UserList (no Main/)
+		// Blacklist tab — v83: BlackList directly under UserList
 		nl::node Blacklist = UserList["BlackList"];
 
-		blacklist_title = Blacklist["base"];
+		// v83: no Blacklist/base — use blacklist0 as title background
+		blacklist_title = Blacklist["blacklist0"];
 
-		for (size_t i = 0; i <= 3; i++)
-			blacklist_grid[i] = UserList["Sheet6"][i];
+		// v83: no Sheet6 — use BlackList/blacklist0-2 for grid backgrounds
+		for (size_t i = 0; i < 3; i++)
+		{
+			std::string key = "blacklist" + std::to_string(i);
+			blacklist_grid[i] = Blacklist[key];
+		}
 
 		blacklist_name = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::BLACK, "none", 0);
 
-		nl::node blacklist_taben = Blacklist["Tab"]["enabled"];
-		nl::node blacklist_tabdis = Blacklist["Tab"]["disabled"];
+		// v83: no Blacklist/Tab — sub-tabs won't render
+		nl::node blacklist_taben = Blacklist["Tab"]["enabled"]; // null
+		nl::node blacklist_tabdis = Blacklist["Tab"]["disabled"]; // null
 
 		buttons[Buttons::BT_BLACKLIST_ADD] = std::make_unique<MapleButton>(Blacklist["BtAdd"]);
 		buttons[Buttons::BT_BLACKLIST_DELETE] = std::make_unique<MapleButton>(Blacklist["BtDelete"]);
+		// v83: no TapShowIndividual/TapShowGuild — null buttons (safe, invisible)
 		buttons[Buttons::BT_TAB_BLACKLIST_INDIVIDUAL] = std::make_unique<MapleButton>(Blacklist["TapShowIndividual"]);
 		buttons[Buttons::BT_TAB_BLACKLIST_GUILD] = std::make_unique<MapleButton>(Blacklist["TapShowGuild"]);
 		buttons[Buttons::BT_BLACKLIST_ADD]->set_active(false);
@@ -319,9 +341,8 @@ namespace ms
 		uint8_t oldtab = tab;
 		tab = tabid;
 
-		// v83: flat structure, no Main/
-		background =
-				tabid == Buttons::BT_TAB_BOSS ? UserList["Boss"]["backgrnd3"] : UserList["backgrnd2"];
+		// v83: flat structure — Boss doesn't exist, use backgrnd2 for all tabs
+		background = UserList["backgrnd2"];
 
 		if (oldtab != tab)
 			buttons[Buttons::BT_TAB_FRIEND + oldtab]->set_state(Button::State::NORMAL);

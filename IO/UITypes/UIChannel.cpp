@@ -36,12 +36,10 @@ namespace ms
 
 		nl::node Channel = nl::nx::ui["UIWindow.img"]["Channel"]; // v83: was UIWindow2.img
 
-		nl::node backgrnd = Channel["backgrnd"];
-		Texture bg = backgrnd;
-
-		sprites.emplace_back(backgrnd, Point<int16_t>(1, 0));
-		sprites.emplace_back(Channel["backgrnd2"]);
-		sprites.emplace_back(Channel["backgrnd3"]);
+		// v83: no backgrnd/backgrnd2/backgrnd3 — background is composed of c/s/t sections
+		sprites.emplace_back(Channel["t"]); // v83: bottom section (436x67) — main background
+		sprites.emplace_back(Channel["s"], Point<int16_t>(0, 67)); // v83: middle section below t
+		sprites.emplace_back(Channel["c"], Point<int16_t>(0, 67 + 36)); // v83: top section (title bar)
 		sprites.emplace_back(Channel["world"][selected_world], Point<int16_t>(16, 30));
 
 		buttons[Buttons::CANCEL] = std::make_unique<MapleButton>(Channel["BtCancel"]);
@@ -76,7 +74,9 @@ namespace ms
 			x++;
 		}
 
-		dimension = bg.get_dimensions();
+		// v83: no single backgrnd bitmap — hardcode dimension from c/s/t composites
+		// c=436x10, s=436x36, t=436x67; channels at y=55..135, buttons below
+		dimension = Point<int16_t>(436, 170);
 		dragarea = Point<int16_t>(dimension.x(), 20);
 	}
 

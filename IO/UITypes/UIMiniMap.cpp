@@ -41,12 +41,15 @@ namespace ms
 
 		type = Setting<MiniMapType>::get().load();
 		user_type = type;
-		simpleMode = Setting<MiniMapSimpleMode>::get().load();
+		// v83: MiniMapSimpleMode node is empty — force simple mode off
+		simpleMode = false;
 
-		std::string node = simpleMode ? "MiniMapSimpleMode" : "MiniMap";
-		MiniMap = nl::nx::ui["UIWindow.img"][node]; // v83: was UIWindow2.img
-		listNpc = nl::nx::ui["UIWindow.img"]["MiniMap"]["ListNpc"]; // v83: was UIWindow2.img
+		MiniMap = nl::nx::ui["UIWindow.img"]["MiniMap"]; // v83: was UIWindow2.img, no MiniMapSimpleMode
+		// v83: MiniMap/ListNpc doesn't exist — null node, guarded in update_npclist()
+		listNpc = nl::nx::ui["UIWindow.img"]["MiniMap"]["ListNpc"];
 
+		// v83: only BtMap exists; BtMin/BtMax/BtSmall/BtBig/BtNpc don't exist
+		// Null MapleButton = zero-size invisible button (safe, non-clickable)
 		buttons[Buttons::BT_MIN] = std::make_unique<MapleButton>(MiniMap["BtMin"], Point<int16_t>(195, -6));
 		buttons[Buttons::BT_MAX] = std::make_unique<MapleButton>(MiniMap["BtMax"], Point<int16_t>(209, -6));
 		buttons[Buttons::BT_SMALL] = std::make_unique<MapleButton>(MiniMap["BtSmall"], Point<int16_t>(223, -6));
@@ -58,11 +61,11 @@ namespace ms
 		town_text = Text(Text::Font::A12B, Text::Alignment::LEFT, Color::Name::WHITE);
 		combined_text = Text(Text::Font::A12M, Text::Alignment::LEFT, Color::Name::WHITE);
 
-		marker = Setting<MiniMapDefaultHelpers>::get().load()
-				 ? nl::nx::ui["UIWindow.img"]["MiniMapSimpleMode"]["DefaultHelper"] // v83: was UIWindow2.img
-				 : nl::nx::map["MapHelper.img"]["minimap"];
+		// v83: MiniMapSimpleMode/DefaultHelper doesn't exist — always use MapHelper
+		marker = nl::nx::map["MapHelper.img"]["minimap"];
 
 		player_marker = Animation(marker["user"]);
+		// v83: MiniMap/iconNpc doesn't exist — empty animation (safe, no-op draw)
 		selected_marker = Animation(MiniMap["iconNpc"]);
 	}
 

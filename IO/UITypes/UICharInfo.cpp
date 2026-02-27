@@ -33,29 +33,30 @@ namespace ms
 		// v83: BtClose3 is empty in v83 — use BtClose2 instead
 		nl::node close = nl::nx::ui["Basic.img"]["BtClose2"];
 		nl::node UserInfo = nl::nx::ui["UIWindow.img"]["UserInfo"]; // v83: was UIWindow2.img
-		nl::node character = UserInfo["character"];
-		nl::node backgrnd = character["backgrnd"];
+		// v83: flat structure — no character/ sub-node; backgrnd etc. directly under UserInfo
+		nl::node backgrnd = UserInfo["backgrnd"];
 
 		/// Main Window
 		sprites.emplace_back(backgrnd);
-		sprites.emplace_back(character["backgrnd2"]);
-		sprites.emplace_back(character["name"]);
+		sprites.emplace_back(UserInfo["backgrnd2"]);
 
 		Point<int16_t> backgrnd_dim = Texture(backgrnd).get_dimensions();
 		Point<int16_t> close_dimensions = Point<int16_t>(backgrnd_dim.x() - 21, 6);
 
 		buttons[Buttons::BtClose] = std::make_unique<MapleButton>(close, close_dimensions);
-		buttons[Buttons::BtCollect] = std::make_unique<MapleButton>(character["BtCollect"]);
-		buttons[Buttons::BtDamage] = std::make_unique<MapleButton>(character["BtDamage"]);
-		buttons[Buttons::BtFamily] = std::make_unique<MapleButton>(character["BtFamily"]);
-		buttons[Buttons::BtItem] = std::make_unique<MapleButton>(character["BtItem"]);
-		buttons[Buttons::BtParty] = std::make_unique<MapleButton>(character["BtParty"]);
-		buttons[Buttons::BtPersonality] = std::make_unique<MapleButton>(character["BtPersonality"]);
-		buttons[Buttons::BtPet] = std::make_unique<MapleButton>(character["BtPet"]);
-		buttons[Buttons::BtPopDown] = std::make_unique<MapleButton>(character["BtPopDown"]);
-		buttons[Buttons::BtPopUp] = std::make_unique<MapleButton>(character["BtPopUp"]);
-		buttons[Buttons::BtRide] = std::make_unique<MapleButton>(character["BtRide"]);
-		buttons[Buttons::BtTrad] = std::make_unique<MapleButton>(character["BtTrad"]);
+		// v83: buttons are directly under UserInfo, not character/
+		// BtCollect, BtDamage, BtPersonality don't exist in v83 — null = invisible (safe)
+		buttons[Buttons::BtCollect] = std::make_unique<MapleButton>(UserInfo["BtCollectionShow"]);
+		buttons[Buttons::BtDamage] = std::make_unique<MapleButton>(UserInfo["BtDamage"]); // v83: doesn't exist
+		buttons[Buttons::BtFamily] = std::make_unique<MapleButton>(UserInfo["BtFamily"]);
+		buttons[Buttons::BtItem] = std::make_unique<MapleButton>(UserInfo["BtItem"]);
+		buttons[Buttons::BtParty] = std::make_unique<MapleButton>(UserInfo["BtParty"]);
+		buttons[Buttons::BtPersonality] = std::make_unique<MapleButton>(UserInfo["BtPersonality"]); // v83: doesn't exist
+		buttons[Buttons::BtPet] = std::make_unique<MapleButton>(UserInfo["BtPetShow"]);
+		buttons[Buttons::BtPopDown] = std::make_unique<MapleButton>(UserInfo["BtPopDown"]); // v83: doesn't exist
+		buttons[Buttons::BtPopUp] = std::make_unique<MapleButton>(UserInfo["BtPopUp"]); // v83: doesn't exist
+		buttons[Buttons::BtRide] = std::make_unique<MapleButton>(UserInfo["BtTamingShow"]);
+		buttons[Buttons::BtTrad] = std::make_unique<MapleButton>(UserInfo["BtTrade"]);
 
 		name = Text(Text::Font::A12M, Text::Alignment::CENTER, Color::Name::WHITE);
 		job = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR);
@@ -68,86 +69,36 @@ namespace ms
 		buttons[Buttons::BtPet]->set_state(Button::State::DISABLED);
 		buttons[Buttons::BtRide]->set_state(Button::State::DISABLED);
 
-		/// Farm
-		nl::node farm = UserInfo["farm"];
-		nl::node farm_backgrnd = farm["backgrnd"];
+		// v83: no farm sub-node — farm panel not available
+		// Initialize farm fields with empty/default values to prevent undefined behavior
+		farm_dim = Point<int16_t>(0, 0);
+		farm_adj = Point<int16_t>(0, 0);
 
-		loading = farm["loading"];
-
-		farm_dim = Texture(farm_backgrnd).get_dimensions();
-		farm_adj = Point<int16_t>(-farm_dim.x(), 0);
-
-		sprites.emplace_back(farm_backgrnd, farm_adj);
-		sprites.emplace_back(farm["backgrnd2"], farm_adj);
-		sprites.emplace_back(farm["default"], farm_adj);
-		sprites.emplace_back(farm["cover"], farm_adj);
-
-		buttons[Buttons::BtFriend] = std::make_unique<MapleButton>(farm["btFriend"], farm_adj);
-		buttons[Buttons::BtVisit] = std::make_unique<MapleButton>(farm["btVisit"], farm_adj);
+		// v83: BtFriend/BtVisit don't exist — null = invisible (safe)
+		buttons[Buttons::BtFriend] = std::make_unique<MapleButton>(UserInfo["BtFriend"]); // doesn't exist
+		buttons[Buttons::BtVisit] = std::make_unique<MapleButton>(UserInfo["BtVisit"]); // doesn't exist
 
 		farm_name = Text(Text::Font::A11M, Text::Alignment::CENTER, Color::Name::SUPERNOVA);
-		farm_level = Charset(farm["number"], Charset::Alignment::LEFT);
+		farm_level = Charset(nl::node(), Charset::Alignment::LEFT); // v83: no farm number charset
 
-#pragma region BottomWindow
+		// v83: no personality/collect/damage/item sub-panels — these are v167+ features
+		// Initialize dimensions to zero so sub-panel toggling is harmless
 		bottom_window_adj = Point<int16_t>(0, backgrnd_dim.y() + 1);
-
-		/// Personality
-		nl::node personality = UserInfo["personality"];
-		nl::node personality_backgrnd = personality["backgrnd"];
-
-		personality_sprites.emplace_back(personality_backgrnd, bottom_window_adj);
-		personality_sprites.emplace_back(personality["backgrnd2"], bottom_window_adj);
-
-		personality_sprites_enabled[true].emplace_back(personality["backgrnd3"], bottom_window_adj);
-		personality_sprites_enabled[true].emplace_back(personality["backgrnd4"], bottom_window_adj);
-		personality_sprites_enabled[true].emplace_back(personality["center"], bottom_window_adj);
-		personality_sprites_enabled[false].emplace_back(personality["before30level"], bottom_window_adj);
-
-		personality_dimensions = Texture(personality_backgrnd).get_dimensions();
-
-		/// Collect
-		nl::node collect = UserInfo["collect"];
-		nl::node collect_backgrnd = collect["backgrnd"];
-
-		collect_sprites.emplace_back(collect_backgrnd, bottom_window_adj);
-		collect_sprites.emplace_back(collect["backgrnd2"], bottom_window_adj);
-
-		default_medal = collect["icon1"];
-
-		buttons[Buttons::BtArrayGet] = std::make_unique<MapleButton>(collect["BtArrayGet"], bottom_window_adj);
-		buttons[Buttons::BtArrayName] = std::make_unique<MapleButton>(collect["BtArrayName"], bottom_window_adj);
-
-		medal_text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, "Junior Adventurer");
-		medal_total = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, "2");
-
-		collect_dimensions = Texture(collect_backgrnd).get_dimensions();
-
-		/// Damage
-		nl::node damage = UserInfo["damage"];
-		nl::node damage_backgrnd = damage["backgrnd"];
-
-		damage_sprites.emplace_back(damage_backgrnd, bottom_window_adj);
-		damage_sprites.emplace_back(damage["backgrnd2"], bottom_window_adj);
-		damage_sprites.emplace_back(damage["backgrnd3"], bottom_window_adj);
-
-		buttons[Buttons::BtFAQ] = std::make_unique<MapleButton>(damage["BtFAQ"], bottom_window_adj);
-		buttons[Buttons::BtRegist] = std::make_unique<MapleButton>(damage["BtRegist"], bottom_window_adj);
-
-		damage_dimensions = Texture(damage_backgrnd).get_dimensions();
-#pragma endregion
-
-#pragma region RightWindow
 		right_window_adj = Point<int16_t>(backgrnd_dim.x(), 0);
 
-		/// Item
-		nl::node item = UserInfo["item"];
-		nl::node item_backgrnd = item["backgrnd"];
+		personality_dimensions = Point<int16_t>(0, 0);
+		collect_dimensions = Point<int16_t>(0, 0);
+		damage_dimensions = Point<int16_t>(0, 0);
+		item_dimensions = Point<int16_t>(0, 0);
 
-		item_sprites.emplace_back(item_backgrnd, right_window_adj);
-		item_sprites.emplace_back(item["backgrnd2"], right_window_adj);
+		// v83: BtArrayGet/BtArrayName/BtFAQ/BtRegist don't exist — null = invisible (safe)
+		buttons[Buttons::BtArrayGet] = std::make_unique<MapleButton>(nl::node());
+		buttons[Buttons::BtArrayName] = std::make_unique<MapleButton>(nl::node());
+		buttons[Buttons::BtFAQ] = std::make_unique<MapleButton>(nl::node());
+		buttons[Buttons::BtRegist] = std::make_unique<MapleButton>(nl::node());
 
-		item_dimensions = Texture(item_backgrnd).get_dimensions();
-#pragma endregion
+		medal_text = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, "");
+		medal_total = Text(Text::Font::A11M, Text::Alignment::LEFT, Color::Name::EMPEROR, "");
 
 
 		dimension = backgrnd_dim;
