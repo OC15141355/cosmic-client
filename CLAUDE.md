@@ -15,6 +15,21 @@ TwinleafStory/
 
 Each subdirectory has its own CLAUDE.md with component-specific context.
 
+## Content Expansion Design (Complete)
+
+The `docs/content-expansion/` directory contains the complete TwinleafStory game design — 8 design documents, 10 repack audits, and 10 implementation prompts. Design was finalized in Session 4 (2026-02-28).
+
+**Start here**: `docs/content-expansion/CLAUDE.md` — design context briefing with document map.
+
+**Key docs**:
+- `docs/content-expansion/IMPLEMENTATION-GUIDE.md` — the step-by-step implementation playbook
+- `docs/content-expansion/TWINLEAF-DESIGN-DOC.md` — master design overview + decision log
+- `docs/content-expansion/twinleaf-skills.md` — 48 custom 4.5 job skills
+- `docs/content-expansion/balance-design.md` — boss HP targets, gear ladder
+- `docs/content-expansion/prompts/` — 10 self-contained prompts for Windows devbox extraction
+
+The design is **implementation-ready**. For "what to do next", see IMPLEMENTATION-GUIDE.md.
+
 ## Client Overview
 
 Native macOS + Windows MapleStory v83 client. Fork of HeavenClient `linux` branch (cross-platform engine), fully ported to v83 NX data. All 26 UI files, 3 character creation paths, audio (BGM+SFX), and core gameplay working.

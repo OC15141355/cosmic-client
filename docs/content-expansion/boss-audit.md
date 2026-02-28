@@ -1,11 +1,13 @@
 # Boss Audit — TwinleafStory v83
 
-Stock Cosmic boss stats extracted from `server/wz/Mob.wz/` XML data, plus columns for playtest findings.
+*Last updated: 2026-02-28 (Session 4 — new content bosses added)*
+
+Stock Cosmic boss stats extracted from `server/wz/Mob.wz/` XML data, plus new content boss HP targets and playtest templates.
 
 ## Current Server Rates
 
 - EXP: 10x | Meso: 10x | Drop: 10x | Boss Drop: 10x | Quest: 5x
-- Solo expeditions: **OFF** (`USE_ENABLE_SOLO_EXPEDITIONS: false`)
+- Solo expeditions: **ON** (`USE_ENABLE_SOLO_EXPEDITIONS: true`) ✅
 
 ---
 
@@ -48,6 +50,38 @@ Stock Cosmic boss stats extracted from `server/wz/Mob.wz/` XML data, plus column
 | 8130100 | Jr. Balrog | 80 | 50,000 | 450 | 605 | 420 | 450 | 2,000 | |
 | 6300005 | Zombie Mushmom | 65 | 35,000 | 250 | 380 | 350 | 400 | 1,500 | undead=1 |
 | 6130101 | Mushmom | 60 | 20,000 | 200 | 300 | 320 | 320 | 1,200 | |
+
+### New Content Bosses (Proposed — Not Yet In Server)
+
+These bosses need importing from the repack. HP values are design targets from `balance-design.md`.
+
+| Boss | Level | Proposed HP | Party Size | Source Area | Key Drops |
+|------|-------|-------------|-----------|-------------|-----------|
+| **Krexel** | 90 | 60,000,000 | 2-3 | Singapore/Ulu City | Singapore accessories, accessory scrolls |
+| **Scarlion** | 80 | 30,000,000 | 2-3 | Kampung Village | Scarlion Hat (DEX/LUK focus, ZHelm alternative) |
+| **Targa** | 80 | 30,000,000 | 2-3 | Kampung Village | Targa Hat (STR/INT focus, ZHelm alternative) |
+| **Chaos Zakum** | 130 | 200,000,000 | 4-6 | Zakum Altar (instance) | Enhanced Zakum gear, rare scrolls |
+| **Von Leon** | 125 | 500,000,000 | 3-6 | Lion Heart Castle | Von Leon Set (Lv 125, 6pc), Von Leon Coins |
+| **Chaos Horntail** | 140 | 600,000,000 | 4-6 | Horntail Cave (instance) | Enhanced HT accessories |
+| **Empress Cygnus** | 140 | 1,500,000,000 | 4-6 | Future Ereve | Empress Set (Lv 140, 7pc), Soul Shards, Rien Keystone |
+| **Chaos Pink Bean** | 150 | 3,000,000,000 | 6+ | Temple of Time (instance) | Cosmetic rewards, medals, rare chairs |
+| **Arcane Guardian** | 170 | 2,000,000,000 | 6+ | Arcane River (M4) | Arcane Set (Lv 160), Arcane Tokens |
+
+#### Mob IDs (from repack audit)
+- **Chaos Zakum**: 8800100-8800116 (17 mobs) ✅ confirmed in repack
+- **Von Leon**: 8840000-8840002 (boss + 2 summons) ✅ confirmed
+- **Empress**: 8850000-8850011 (5 commanders × 2 phases + Shinsoo + Empress) ✅ confirmed
+- **Krexel**: TBD — need to confirm mob ID in Singapore data
+- **Scarlion/Targa**: TBD — Kampung boss IDs
+- **Arcane Guardian**: TBD (Milestone 4)
+
+#### Von Leon Set Bonuses
+- 3 piece: +15 all stats, +300 HP/MP
+- 6 piece: +30 all stats, +500 HP/MP, +10 ATK/MATK
+
+#### Empress Set Bonuses
+- 4 piece: +25 all stats, +500 HP/MP, +10 ATK/MATK
+- 7 piece: +50 all stats, +1000 HP/MP, +20 ATK/MATK, +10% boss damage
 
 ---
 
@@ -107,6 +141,45 @@ Fill in during Phase 2 gameplay testing on the dev box.
 - **Feel**: Too hard / About right / Too easy
 - **Notes**: ___
 
+#### Krexel (NEW — Singapore)
+- **Tested with**: ___ players, classes: ___
+- **Time to clear**: ___
+- **Deaths**: ___
+- **Feel**: Too hard / About right / Too easy
+- **Notes**: ___
+
+#### Von Leon (NEW — LHC)
+- **Tested with**: ___ players, classes: ___
+- **Time to clear**: ___
+- **Deaths**: ___
+- **Damage dealt per hit**: ___ range
+- **Damage received per hit**: ___
+- **Notable drops**: ___ (Von Leon Set pieces? Von Leon Coins?)
+- **Feel**: Too hard / About right / Too easy
+- **Notes**: ___
+
+#### Empress Cygnus (NEW — Future Ereve)
+- **Tested with**: ___ players, classes: ___
+- **Time to clear**: ___
+- **Deaths**: ___
+- **Phase transitions**: Smooth / Buggy
+- **CK Commander phases**: All working / Some broken
+- **Notable drops**: ___ (Empress Set? Soul Shards? Rien Keystone?)
+- **Feel**: Too hard / About right / Too easy
+- **Notes**: ___
+
+#### Chaos Zakum (NEW)
+- **Tested with**: ___ players, classes: ___
+- **Time to clear**: ___
+- **Feel**: Too hard / About right / Too easy
+- **Notes**: ___
+
+#### Chaos Horntail (NEW)
+- **Tested with**: ___ players, classes: ___
+- **Time to clear**: ___
+- **Feel**: Too hard / About right / Too easy
+- **Notes**: ___
+
 ---
 
 ## Party Quest Audit
@@ -125,17 +198,18 @@ Fill in during Phase 2 gameplay testing on the dev box.
 
 ## Gear Ceiling Audit
 
-What's the best available gear at each level bracket?
+> Full vendor tables in `world-design.md`. Full player-facing guide in `PROGRESSION-GUIDE.md`.
 
-| Level Bracket | Weapon | Armor | Accessories | Source | Notes |
-|---------------|--------|-------|-------------|--------|-------|
-| 1-30 | | | | Drops + quests | |
-| 31-50 | | | | | |
-| 51-70 | | | | | |
-| 71-100 | | | | Zakum Helm territory | |
-| 101-120 | | | | HT accessories | |
-| 121-150 | | | | ??? (the gap) | |
-| 150+ | | | | ??? (the gap) | |
+| Level Bracket | Weapon | Armor | Accessories | Source |
+|---------------|--------|-------|-------------|--------|
+| 1-30 | Quest weapons | Quest gear | — | Victoria zone vendors, quests |
+| 31-50 | **Maple Weapons** (35-64) | Various drops | Ellin earring+ring (50) | Mushroom Castle vendor, Ellin vendor |
+| 51-70 | KFT/Magatia vendor weapons | KFT armor set (60) | — | Zone completion vendors |
+| 71-100 | Boss drops, Zipangu vendor | **Zakum Helm** (70), Scarlion/Targa hat (80) | Singapore accessories | Zakum, Kampung, Singapore |
+| 101-120 | Corrupted ToT gear (110) | Corrupted ToT armor (110) | **HT Necklace/Pendant** (100) | ToT vendor, Horntail |
+| 121-130 | **Von Leon Set weapons** (125) | **Von Leon Set armor** (125) | Von Leon Ring (125) | Von Leon boss + VL Coin vendor |
+| 131-140 | **Empress Set weapons** (140) | **Empress Set armor** (140) | Empress accessories (140) | Empress boss + Soul Shard vendor |
+| 150-170 | **Arcane Set** (160) | **Arcane Set** (160) | Arcane accessories (160) | Arcane Token vendor (M4) |
 
 ---
 

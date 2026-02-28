@@ -1,6 +1,8 @@
 # Balance Design — TwinleafStory v83
 
-Design document for boss rebalancing and gear progression. This is the **DESIGN** phase — implementation comes after playtest validation.
+*Last updated: 2026-02-28 (Session 4 — new bosses added, gear progression updated)*
+
+Design document for boss rebalancing and gear progression. This is the **DESIGN** phase — implementation comes after playtest validation. See `world-design.md` for full gear/vendor tables and `boss-audit.md` for stock boss stat audit.
 
 ---
 
@@ -20,10 +22,11 @@ Design document for boss rebalancing and gear progression. This is the **DESIGN*
 
 | Tier | Party Size | Boss Examples | Design Goal |
 |------|-----------|---------------|-------------|
-| **Solo** | 1 player | Mushmom, Zombie Mushmom, Jr. Balrog, Crimson Balrog | Quick farm, no prep needed |
-| **Duo** | 2-3 players | Papulatus, Pianus | Moderate challenge, casual grouping |
-| **Party** | 4-6 players | Zakum, Horntail, Showa Boss | Requires coordination, main progression |
-| **Raid** | 6+ players | Pink Bean | Aspirational endgame, guild content |
+| **Solo** | 1 player | Mushmom, Zombie Mushmom, Jr. Balrog, Crimson Balrog, Nine-Tailed Fox, Bodyguard A | Quick farm, no prep needed |
+| **Duo** | 2-3 players | Papulatus, Pianus, Krexel, Scarlion, Targa | Moderate challenge, casual grouping |
+| **Party** | 3-6 players | Zakum, Horntail, Von Leon, Showa Boss | Requires coordination, main progression |
+| **Hard Party** | 4-6 players | Chaos Zakum, Chaos Horntail, Empress Cygnus | Endgame, requires good gear |
+| **Aspirational** | 6+ players | Chaos Pink Bean, Arcane Guardian | Ultimate challenge, group coordination |
 
 ### Proposed HP Adjustments
 
@@ -44,8 +47,22 @@ Based on WZ data audit. **These are starting proposals — playtest first.**
 | Zakum Arms (each) | 22-33M | 8,000,000 | ~0.30x | Arms should fall fast with a party |
 | Horntail (Heads) | 330,000,000 | 80,000,000 | 0.24x | 4-6 players, ~20-30 min fight |
 | Horntail (Pivot) | 2,090,000,000 | 200,000,000 | 0.10x | Main body, longest phase |
-| Showa Boss | 150,000,000 | 40,000,000 | 0.27x | 4-6 players, high def stays |
+| Showa Boss | 150,000,000 | 150,000,000 (PDef 1500) | 1.0x | ✅ DONE — defense nerfed, HP kept |
 | Pink Bean | 2,100,000,000 | 500,000,000 | 0.24x | 6+ players, aspirational |
+
+### New Content Bosses (Proposed HP)
+
+| Boss | Level | Proposed HP | Party Size | Tier | Drops |
+|------|-------|-------------|-----------|------|-------|
+| Krexel | 90 | 60,000,000 | 2-3 | Duo | Singapore accessories, scrolls |
+| Scarlion | 80 | 30,000,000 | 2-3 | Duo | Scarlion Hat (DEX/LUK ZHelm alt) |
+| Targa | 80 | 30,000,000 | 2-3 | Duo | Targa Hat (STR/INT ZHelm alt) |
+| Von Leon | 125 | 500,000,000 | 3-6 | Party | Von Leon Set (Lv 125), Von Leon Coins |
+| Chaos Zakum | 120 | 200,000,000 | 4-6 | Hard Party | Enhanced Zakum gear, rare scrolls |
+| Chaos Horntail | 130 | 600,000,000 | 4-6 | Hard Party | Enhanced HT accessories |
+| Empress Cygnus | 140 | 1,500,000,000 | 4-6 | Hard Party | Empress Set (Lv 140), Soul Shards |
+| Chaos Pink Bean | 150 | 3,000,000,000 | 6+ | Aspirational | Cosmetic rewards, medals, rare chairs |
+| Arcane Guardian | 170 | 2,000,000,000 | 6+ | Aspirational | Arcane Set (Lv 160), Arcane Tokens |
 
 ### Proposed Damage Adjustments
 
@@ -71,37 +88,37 @@ Boss damage may also need tuning. Wait for playtest data before changing.
 
 ## Gear Progression Design
 
-### Current Gear Ceiling (v83 Stock)
+> **Full gear tables in `world-design.md`** (zone completion vendors) and **`PROGRESSION-GUIDE.md`** (player-facing guide).
 
-| Level | Best Available | Source |
-|-------|---------------|--------|
-| 1-30 | Class-specific quest gear | Quests, NPC shops |
-| 30-50 | Stiff Feather Hat, various | Monster drops, crafting |
-| 50-70 | Various 50+ equips | Drops, quest rewards |
-| 70 | Zakum Helmet | Zakum |
-| 80-100 | Various weapons, armors | Drops |
-| 110+ | Horntail Necklace, Pendant | Horntail |
-| 120+ | **NOTHING NEW** | ← The gap |
+### Gear Ladder (Decided — Session 4)
 
-### Proposed New Gear (Level 120-150+)
+| Level | Best Available | Source | Notes |
+|-------|---------------|--------|-------|
+| 1-30 | Class-specific quest gear | Quests, NPC shops, zone vendors | Victoria completion vendor: basic adventurer set |
+| 35-64 | **Maple Weapons** | Mushroom Castle vendor (King Pepe quest) | Iconic early-game upgrade |
+| 50-70 | KFT armor, Ellin accessories | Zone completion vendors | KFT Lv 60 armor, Ellin Lv 50 earring+ring |
+| 70 | Zakum Helmet | Zakum boss | Still core progression |
+| 78 | Magatia faction weapons | Magatia completion vendor | Alcadno vs Zenumist faction choice |
+| 80-100 | Singapore accessories, Scarlion/Targa hats | Zone vendors + bosses | Kampung hats = ZHelm alternatives |
+| 100 | Horntail Necklace, Pendant | Horntail boss | |
+| 110 | **Corrupted ToT gear** | ToT completion vendor | Bridges the 100-120 gap |
+| 120 | **Chaos Zakum/HT drops** | Boss drops | Enhanced versions of Zak/HT gear |
+| 125 | **Von Leon Set** (6 pc) | VL boss drops + Von Leon Coin vendor | 3pc: +15 all +300 HP/MP, 6pc: +30 all +500 HP/MP +10 ATK/MATK |
+| 140 | **Empress Set** (7 pc) | Empress drops + Soul Shard vendor (Ereve) | 4pc: +25 all +500 HP/MP +10 ATK/MATK, 7pc: +50 all +1000 HP/MP +20 ATK/MATK +10% boss |
+| 160 | **Arcane Set** | Arcane Token vendor (M4) | TBD stats |
 
-New areas (Phase 5) drop gear that fills the 120+ gap. This gear should be:
-- **Better than Zakum/HT accessories** but not game-breaking
-- **Themed to the new area** (visual identity)
-- **Tradeable** to support the economy
-- **Scrollable** for customization
+### Zone Completion Vendor System
 
-Placeholder ideas (finalize after playtest):
+Every zone has a completion condition → vendor unlocks selling level-appropriate gear. Vendor gear = reliable baseline (~70-80% of boss drop quality). Boss drops = premium upgrade path. Token currencies provide endgame bad luck protection.
 
-| Level | Item Slot | Stats (Base) | Source Area | Notes |
-|-------|-----------|-------------|-------------|-------|
-| 120 | Weapon | +5-10 ATT over current 120 weapons | New Area 1 | Class-specific drops |
-| 130 | Helmet | Better than Zakum Helm by ~5 stats | New Area 1 | Rare drop |
-| 140 | Pendant | Better than HT Pendant by ~3-5 stats | New Area 2 | Boss drop |
-| 150 | Earring | New slot option | New Area 2 | Quest reward |
-| 150 | Overall/Top | Level 150 armor set | New Area 2 | Set bonus |
+**Token currencies:**
+| Token | Source | Exchange |
+|-------|--------|----------|
+| Von Leon Coins | LHC mobs + Von Leon boss | ~50 coins = specific Von Leon piece (mobs 1-3, boss 10) |
+| Soul Shards | Future Ereve mobs + Empress (3-5/kill) | 10 shards = specific Empress piece |
+| Arcane Tokens | Arcane River mobs + Guardian | TBD exchange rate |
 
-**Key constraint**: Don't make old content irrelevant. Zakum Helm should still be a good stepping stone. New gear should be a ~10-15% improvement, not 2x.
+**Key constraint**: Don't make old content irrelevant. Zakum Helm is still a good stepping stone. Each tier is ~10-15% improvement, not 2x.
 
 ---
 
@@ -119,10 +136,10 @@ Current rates (from `config.yaml`):
 
 ### Solo Expeditions
 
-`USE_ENABLE_SOLO_EXPEDITIONS` is currently **false**. For a small-group server, consider enabling this so players can attempt bosses solo (they'll still be hard, just not gated by party requirements).
+`USE_ENABLE_SOLO_EXPEDITIONS` — **ENABLED** on the server (set to true). Players can attempt bosses solo. They're still hard, just not gated by party size requirements. Essential for a 5-15 player server.
 
 ```yaml
-USE_ENABLE_SOLO_EXPEDITIONS: true
+USE_ENABLE_SOLO_EXPEDITIONS: true  # ✅ Already set
 ```
 
 ---
@@ -166,12 +183,28 @@ For defense changes:
 
 ---
 
+## Skill Balance Impact (Session 3-4)
+
+The 4.5 skill revamp (see `twinleaf-skills.md`) significantly changes class balance:
+- **30+ dead skills cut** — frees hotkey slots, simplifies rotations
+- **Shadower completely rebuilt** — from meso gimmick DPS to melee assassin (Shadow Flurry, Marked for Death, Mirror Image, Final Cut)
+- **Hero gets ranged option** (Soul Driver) — no longer pure melee
+- **Bishop gets ULTIMATE** (Divine Judgment: full party heal + 10s invuln, 180s CD) — changes raid healing calculus
+- **MW auto-passive + boosters baked in** — frees 2 hotkey slots per class, affects total DPS calculations
+
+Boss HP targets were designed BEFORE 4.5 skills. May need re-tuning upward once 4.5 skills are implemented (more DPS available per player).
+
+---
+
 ## Open Questions (Resolve During Playtest)
 
 - [ ] What damage does a well-geared level 120 deal per hit? (Determines if HP values are right)
 - [ ] Are Cosmic damage formulas pre-BB or post-BB?
-- [ ] Do PQs all work correctly?
+- [ ] Do PQs all work correctly? (Core 3: KPQ/LPQ/OPQ)
 - [ ] Is the Showa boss even accessible? (Need to verify quest/map chain)
 - [ ] What's the actual meso economy like at 10x rates?
-- [ ] Does Free Market work?
+- [ ] ~~Does Free Market work?~~ → Free Market replaced by Kerning Night Market (Trade button)
 - [ ] Are there any broken quests in the 1-120 leveling path?
+- [ ] Do Von Leon Coins / Soul Shards feel right as token accumulation rate?
+- [ ] Is 4-6 the right Empress party size or does it need 6+?
+- [ ] How do 4.5 skills affect boss time-to-kill? (Re-tune HP after implementation)
