@@ -1,0 +1,30 @@
+=== Mob String.wz entries (spot check) ===
+  <imgdir name="8210000">
+    <string name="name" value="Crocky the Gatekeeper"/>
+---
+  <imgdir name="8600000">
+    <string name="name" value="Mutant Snail"/>
+---
+  <imgdir name="8850011">
+    <string name="name" value="Cygnus"/>
+---
+  <imgdir name="8840000">
+    <string name="name" value="Von Leon"/>
+---
+  <imgdir name="9420514">
+    <string name="name" value="Berserkie"/>
+---
+  <imgdir name="8220016">
+    <string name="name" value="Corrupted Wyvern"/>
+---
+  <imgdir name="8800100">
+    <string name="name" value="Chaos Zakum"/>
+---
+=== Map String.wz entries (spot check) ===
+---
+---
+    <imgdir name="541020000">
+        <string name="streetName" value="Singapore" />
+        <string name="mapName" value="Ulu City Entrance" />
+    </imgdir>
+---

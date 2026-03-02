@@ -1,0 +1,7 @@
+=== ToT Quest Kill Counts (Check.img.xml) ===
+=== Display text check ===
+    <string name="1" value="Eliminate #b99#k Green Mushrooms, then find &quot;The Rememberer.&quot; \n\n#o1110100# #r#a21051##k"/>
+    <string name="1" value="Eliminate #b99#k #o2230100#s, then find &quot;The Rememberer.&quot; \n\n#o2230100# #r#a21081##k"/>
+    <string name="1" value="Eliminate #b99#k #o3230100#s, then find &quot;The Rememberer.&quot; \n\n#o3230100# #r#a21091##k"/>
+    <string name="1" value="Eliminate #b100#k Green Mushrooms, then find &quot;The Rememberer.&quot; \n\n#o1110100# #r#a21111##k"/>
+    <string name="1" value="Eliminate #b100#k #o2110200#s, then find &quot;The Rememberer.&quot; \n\n#o2110200# #r#a21121##k"/>
